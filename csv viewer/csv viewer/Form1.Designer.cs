@@ -29,67 +29,66 @@
         private void InitializeComponent()
         {
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.button2 = new System.Windows.Forms.Button();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
+            this.listBox1 = new System.Windows.Forms.ListBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.groupBox5 = new System.Windows.Forms.GroupBox();
-            this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.groupBox3 = new System.Windows.Forms.GroupBox();
-            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
-            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox6 = new System.Windows.Forms.GroupBox();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
+            this.groupBox11 = new System.Windows.Forms.GroupBox();
+            this.radioButton10 = new System.Windows.Forms.RadioButton();
+            this.radioButton9 = new System.Windows.Forms.RadioButton();
+            this.radioButton8 = new System.Windows.Forms.RadioButton();
+            this.groupBox9 = new System.Windows.Forms.GroupBox();
+            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
+            this.groupBox5 = new System.Windows.Forms.GroupBox();
+            this.radioButton7 = new System.Windows.Forms.RadioButton();
+            this.radioButton6 = new System.Windows.Forms.RadioButton();
+            this.radioButton5 = new System.Windows.Forms.RadioButton();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
+            this.radioButton4 = new System.Windows.Forms.RadioButton();
+            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
+            this.radioButton1 = new System.Windows.Forms.RadioButton();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel3 = new System.Windows.Forms.TableLayoutPanel();
+            this.textBox2 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.button3 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
-            this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
-            this.groupBox7 = new System.Windows.Forms.GroupBox();
-            this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
-            this.radioButton1 = new System.Windows.Forms.RadioButton();
-            this.radioButton2 = new System.Windows.Forms.RadioButton();
-            this.radioButton3 = new System.Windows.Forms.RadioButton();
-            this.radioButton4 = new System.Windows.Forms.RadioButton();
-            this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.tableLayoutPanel7 = new System.Windows.Forms.TableLayoutPanel();
-            this.groupBox11 = new System.Windows.Forms.GroupBox();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.radioButton8 = new System.Windows.Forms.RadioButton();
-            this.radioButton9 = new System.Windows.Forms.RadioButton();
-            this.radioButton10 = new System.Windows.Forms.RadioButton();
-            this.textBox3 = new System.Windows.Forms.TextBox();
-            this.radioButton5 = new System.Windows.Forms.RadioButton();
-            this.radioButton6 = new System.Windows.Forms.RadioButton();
-            this.radioButton7 = new System.Windows.Forms.RadioButton();
-            this.groupBox2 = new System.Windows.Forms.GroupBox();
-            this.listBox1 = new System.Windows.Forms.ListBox();
-            this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.button2 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
+            this.graph1 = new csv_viewer.Graph();
             this.groupBox1.SuspendLayout();
+            this.tableLayoutPanel2.SuspendLayout();
+            this.groupBox2.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
-            this.groupBox5.SuspendLayout();
-            this.groupBox4.SuspendLayout();
-            this.groupBox3.SuspendLayout();
-            this.statusStrip1.SuspendLayout();
             this.groupBox6.SuspendLayout();
-            this.tableLayoutPanel3.SuspendLayout();
-            this.tableLayoutPanel4.SuspendLayout();
-            this.groupBox7.SuspendLayout();
-            this.tableLayoutPanel5.SuspendLayout();
-            this.groupBox8.SuspendLayout();
-            this.groupBox9.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
             this.splitContainer1.SuspendLayout();
+            this.groupBox8.SuspendLayout();
             this.tableLayoutPanel7.SuspendLayout();
             this.groupBox11.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
-            this.groupBox2.SuspendLayout();
-            this.tableLayoutPanel2.SuspendLayout();
+            this.groupBox9.SuspendLayout();
+            this.groupBox4.SuspendLayout();
+            this.tableLayoutPanel4.SuspendLayout();
+            this.groupBox5.SuspendLayout();
+            this.groupBox7.SuspendLayout();
+            this.tableLayoutPanel5.SuspendLayout();
+            this.groupBox3.SuspendLayout();
+            this.tableLayoutPanel3.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -102,6 +101,66 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Csv Reader";
+            // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 2;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Controls.Add(this.button2, 1, 0);
+            this.tableLayoutPanel2.Controls.Add(this.groupBox2, 0, 1);
+            this.tableLayoutPanel2.Controls.Add(this.button1, 0, 0);
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 2;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(285, 164);
+            this.tableLayoutPanel2.TabIndex = 0;
+            // 
+            // button2
+            // 
+            this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button2.Location = new System.Drawing.Point(145, 3);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(137, 24);
+            this.button2.TabIndex = 1;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            // 
+            // groupBox2
+            // 
+            this.tableLayoutPanel2.SetColumnSpan(this.groupBox2, 2);
+            this.groupBox2.Controls.Add(this.listBox1);
+            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox2.Location = new System.Drawing.Point(3, 33);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(279, 128);
+            this.groupBox2.TabIndex = 1;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Channels";
+            // 
+            // listBox1
+            // 
+            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.listBox1.FormattingEnabled = true;
+            this.listBox1.ItemHeight = 16;
+            this.listBox1.Location = new System.Drawing.Point(3, 18);
+            this.listBox1.Name = "listBox1";
+            this.listBox1.ScrollAlwaysVisible = true;
+            this.listBox1.Size = new System.Drawing.Size(273, 107);
+            this.listBox1.TabIndex = 0;
+            // 
+            // button1
+            // 
+            this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button1.Location = new System.Drawing.Point(3, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(136, 24);
+            this.button1.TabIndex = 0;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel1
             // 
@@ -124,6 +183,159 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1113, 574);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
+            // groupBox6
+            // 
+            this.groupBox6.Controls.Add(this.splitContainer1);
+            this.groupBox6.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox6.Location = new System.Drawing.Point(300, 3);
+            this.groupBox6.Name = "groupBox6";
+            this.tableLayoutPanel1.SetRowSpan(this.groupBox6, 3);
+            this.groupBox6.Size = new System.Drawing.Size(810, 568);
+            this.groupBox6.TabIndex = 1;
+            this.groupBox6.TabStop = false;
+            this.groupBox6.Text = "Details";
+            this.groupBox6.Enter += new System.EventHandler(this.groupBox6_Enter);
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(3, 18);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.groupBox8);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.groupBox9);
+            this.splitContainer1.Size = new System.Drawing.Size(804, 547);
+            this.splitContainer1.SplitterDistance = 393;
+            this.splitContainer1.TabIndex = 2;
+            // 
+            // groupBox8
+            // 
+            this.groupBox8.Controls.Add(this.tableLayoutPanel7);
+            this.groupBox8.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox8.Location = new System.Drawing.Point(0, 0);
+            this.groupBox8.Name = "groupBox8";
+            this.groupBox8.Size = new System.Drawing.Size(804, 393);
+            this.groupBox8.TabIndex = 0;
+            this.groupBox8.TabStop = false;
+            this.groupBox8.Text = "Graphs";
+            // 
+            // tableLayoutPanel7
+            // 
+            this.tableLayoutPanel7.ColumnCount = 1;
+            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel7.Controls.Add(this.groupBox11, 0, 1);
+            this.tableLayoutPanel7.Controls.Add(this.graph1, 0, 0);
+            this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
+            this.tableLayoutPanel7.RowCount = 2;
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 70F));
+            this.tableLayoutPanel7.Size = new System.Drawing.Size(798, 372);
+            this.tableLayoutPanel7.TabIndex = 1;
+            // 
+            // groupBox11
+            // 
+            this.groupBox11.Controls.Add(this.radioButton10);
+            this.groupBox11.Controls.Add(this.radioButton9);
+            this.groupBox11.Controls.Add(this.radioButton8);
+            this.groupBox11.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox11.Location = new System.Drawing.Point(3, 305);
+            this.groupBox11.Name = "groupBox11";
+            this.groupBox11.Size = new System.Drawing.Size(792, 64);
+            this.groupBox11.TabIndex = 1;
+            this.groupBox11.TabStop = false;
+            this.groupBox11.Text = "Display options";
+            // 
+            // radioButton10
+            // 
+            this.radioButton10.AutoSize = true;
+            this.radioButton10.Dock = System.Windows.Forms.DockStyle.Left;
+            this.radioButton10.Location = new System.Drawing.Point(223, 18);
+            this.radioButton10.Name = "radioButton10";
+            this.radioButton10.Size = new System.Drawing.Size(118, 43);
+            this.radioButton10.TabIndex = 2;
+            this.radioButton10.TabStop = true;
+            this.radioButton10.Text = "radioButton10";
+            this.radioButton10.UseVisualStyleBackColor = true;
+            // 
+            // radioButton9
+            // 
+            this.radioButton9.AutoSize = true;
+            this.radioButton9.Dock = System.Windows.Forms.DockStyle.Left;
+            this.radioButton9.Location = new System.Drawing.Point(113, 18);
+            this.radioButton9.Name = "radioButton9";
+            this.radioButton9.Size = new System.Drawing.Size(110, 43);
+            this.radioButton9.TabIndex = 1;
+            this.radioButton9.TabStop = true;
+            this.radioButton9.Text = "radioButton9";
+            this.radioButton9.UseVisualStyleBackColor = true;
+            // 
+            // radioButton8
+            // 
+            this.radioButton8.AutoSize = true;
+            this.radioButton8.Dock = System.Windows.Forms.DockStyle.Left;
+            this.radioButton8.Location = new System.Drawing.Point(3, 18);
+            this.radioButton8.Name = "radioButton8";
+            this.radioButton8.Size = new System.Drawing.Size(110, 43);
+            this.radioButton8.TabIndex = 0;
+            this.radioButton8.TabStop = true;
+            this.radioButton8.Text = "radioButton8";
+            this.radioButton8.UseVisualStyleBackColor = true;
+            // 
+            // groupBox9
+            // 
+            this.groupBox9.Controls.Add(this.textBox3);
+            this.groupBox9.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox9.Location = new System.Drawing.Point(0, 0);
+            this.groupBox9.Name = "groupBox9";
+            this.groupBox9.Size = new System.Drawing.Size(804, 150);
+            this.groupBox9.TabIndex = 1;
+            this.groupBox9.TabStop = false;
+            this.groupBox9.Text = "Statistics";
+            // 
+            // textBox3
+            // 
+            this.textBox3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.textBox3.Location = new System.Drawing.Point(3, 18);
+            this.textBox3.Multiline = true;
+            this.textBox3.Name = "textBox3";
+            this.textBox3.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBox3.Size = new System.Drawing.Size(798, 129);
+            this.textBox3.TabIndex = 0;
+            // 
+            // groupBox4
+            // 
+            this.groupBox4.Controls.Add(this.tableLayoutPanel4);
+            this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox4.Location = new System.Drawing.Point(3, 385);
+            this.groupBox4.Name = "groupBox4";
+            this.groupBox4.Size = new System.Drawing.Size(291, 186);
+            this.groupBox4.TabIndex = 1;
+            this.groupBox4.TabStop = false;
+            this.groupBox4.Text = "Common settings";
+            // 
+            // tableLayoutPanel4
+            // 
+            this.tableLayoutPanel4.ColumnCount = 1;
+            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.Controls.Add(this.groupBox5, 0, 1);
+            this.tableLayoutPanel4.Controls.Add(this.groupBox7, 0, 0);
+            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
+            this.tableLayoutPanel4.RowCount = 2;
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel4.Size = new System.Drawing.Size(285, 165);
+            this.tableLayoutPanel4.TabIndex = 0;
+            // 
             // groupBox5
             // 
             this.groupBox5.Controls.Add(this.radioButton7);
@@ -137,16 +349,114 @@
             this.groupBox5.TabStop = false;
             this.groupBox5.Text = "Decimal delimiter";
             // 
-            // groupBox4
+            // radioButton7
             // 
-            this.groupBox4.Controls.Add(this.tableLayoutPanel4);
-            this.groupBox4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox4.Location = new System.Drawing.Point(3, 385);
-            this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(291, 186);
-            this.groupBox4.TabIndex = 1;
-            this.groupBox4.TabStop = false;
-            this.groupBox4.Text = "Common settings";
+            this.radioButton7.AutoSize = true;
+            this.radioButton7.Dock = System.Windows.Forms.DockStyle.Left;
+            this.radioButton7.Location = new System.Drawing.Point(223, 18);
+            this.radioButton7.Name = "radioButton7";
+            this.radioButton7.Size = new System.Drawing.Size(110, 56);
+            this.radioButton7.TabIndex = 2;
+            this.radioButton7.TabStop = true;
+            this.radioButton7.Text = "radioButton7";
+            this.radioButton7.UseVisualStyleBackColor = true;
+            // 
+            // radioButton6
+            // 
+            this.radioButton6.AutoSize = true;
+            this.radioButton6.Dock = System.Windows.Forms.DockStyle.Left;
+            this.radioButton6.Location = new System.Drawing.Point(113, 18);
+            this.radioButton6.Name = "radioButton6";
+            this.radioButton6.Size = new System.Drawing.Size(110, 56);
+            this.radioButton6.TabIndex = 1;
+            this.radioButton6.TabStop = true;
+            this.radioButton6.Text = "radioButton6";
+            this.radioButton6.UseVisualStyleBackColor = true;
+            // 
+            // radioButton5
+            // 
+            this.radioButton5.AutoSize = true;
+            this.radioButton5.Dock = System.Windows.Forms.DockStyle.Left;
+            this.radioButton5.Location = new System.Drawing.Point(3, 18);
+            this.radioButton5.Name = "radioButton5";
+            this.radioButton5.Size = new System.Drawing.Size(110, 56);
+            this.radioButton5.TabIndex = 0;
+            this.radioButton5.TabStop = true;
+            this.radioButton5.Text = "radioButton5";
+            this.radioButton5.UseVisualStyleBackColor = true;
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.tableLayoutPanel5);
+            this.groupBox7.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.groupBox7.Location = new System.Drawing.Point(3, 3);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(279, 76);
+            this.groupBox7.TabIndex = 2;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Field separator";
+            // 
+            // tableLayoutPanel5
+            // 
+            this.tableLayoutPanel5.ColumnCount = 2;
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel5.Controls.Add(this.radioButton4, 1, 1);
+            this.tableLayoutPanel5.Controls.Add(this.radioButton3, 0, 1);
+            this.tableLayoutPanel5.Controls.Add(this.radioButton2, 1, 0);
+            this.tableLayoutPanel5.Controls.Add(this.radioButton1, 0, 0);
+            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 18);
+            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
+            this.tableLayoutPanel5.RowCount = 2;
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel5.Size = new System.Drawing.Size(273, 55);
+            this.tableLayoutPanel5.TabIndex = 0;
+            // 
+            // radioButton4
+            // 
+            this.radioButton4.AutoSize = true;
+            this.radioButton4.Location = new System.Drawing.Point(139, 30);
+            this.radioButton4.Name = "radioButton4";
+            this.radioButton4.Size = new System.Drawing.Size(110, 21);
+            this.radioButton4.TabIndex = 3;
+            this.radioButton4.TabStop = true;
+            this.radioButton4.Text = "radioButton4";
+            this.radioButton4.UseVisualStyleBackColor = true;
+            // 
+            // radioButton3
+            // 
+            this.radioButton3.AutoSize = true;
+            this.radioButton3.Location = new System.Drawing.Point(3, 30);
+            this.radioButton3.Name = "radioButton3";
+            this.radioButton3.Size = new System.Drawing.Size(110, 21);
+            this.radioButton3.TabIndex = 2;
+            this.radioButton3.TabStop = true;
+            this.radioButton3.Text = "radioButton3";
+            this.radioButton3.UseVisualStyleBackColor = true;
+            // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Location = new System.Drawing.Point(139, 3);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(110, 21);
+            this.radioButton2.TabIndex = 1;
+            this.radioButton2.TabStop = true;
+            this.radioButton2.Text = "radioButton2";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            // 
+            // radioButton1
+            // 
+            this.radioButton1.AutoSize = true;
+            this.radioButton1.Location = new System.Drawing.Point(3, 3);
+            this.radioButton1.Name = "radioButton1";
+            this.radioButton1.Size = new System.Drawing.Size(110, 21);
+            this.radioButton1.TabIndex = 0;
+            this.radioButton1.TabStop = true;
+            this.radioButton1.Text = "radioButton1";
+            this.radioButton1.UseVisualStyleBackColor = true;
             // 
             // groupBox3
             // 
@@ -158,36 +468,6 @@
             this.groupBox3.TabIndex = 1;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "Csv Generator";
-            // 
-            // statusStrip1
-            // 
-            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripStatusLabel1});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 574);
-            this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(1113, 25);
-            this.statusStrip1.TabIndex = 2;
-            this.statusStrip1.Text = "statusStrip1";
-            // 
-            // toolStripStatusLabel1
-            // 
-            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
-            this.toolStripStatusLabel1.Size = new System.Drawing.Size(59, 20);
-            this.toolStripStatusLabel1.Text = "lsslslslsl";
-            // 
-            // groupBox6
-            // 
-            this.groupBox6.Controls.Add(this.splitContainer1);
-            this.groupBox6.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox6.Location = new System.Drawing.Point(300, 3);
-            this.groupBox6.Name = "groupBox6";
-            this.tableLayoutPanel1.SetRowSpan(this.groupBox6, 3);
-            this.groupBox6.Size = new System.Drawing.Size(810, 568);
-            this.groupBox6.TabIndex = 1;
-            this.groupBox6.TabStop = false;
-            this.groupBox6.Text = "Details";
-            this.groupBox6.Enter += new System.EventHandler(this.groupBox6_Enter);
             // 
             // tableLayoutPanel3
             // 
@@ -210,6 +490,14 @@
             this.tableLayoutPanel3.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25F));
             this.tableLayoutPanel3.Size = new System.Drawing.Size(285, 164);
             this.tableLayoutPanel3.TabIndex = 0;
+            // 
+            // textBox2
+            // 
+            this.textBox2.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.textBox2.Location = new System.Drawing.Point(145, 50);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(100, 22);
+            this.textBox2.TabIndex = 5;
             // 
             // label1
             // 
@@ -262,321 +550,30 @@
             this.textBox1.Size = new System.Drawing.Size(100, 22);
             this.textBox1.TabIndex = 4;
             // 
-            // textBox2
+            // statusStrip1
             // 
-            this.textBox2.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.textBox2.Location = new System.Drawing.Point(145, 50);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 22);
-            this.textBox2.TabIndex = 5;
+            this.statusStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 574);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(1113, 25);
+            this.statusStrip1.TabIndex = 2;
+            this.statusStrip1.Text = "statusStrip1";
             // 
-            // tableLayoutPanel4
+            // toolStripStatusLabel1
             // 
-            this.tableLayoutPanel4.ColumnCount = 1;
-            this.tableLayoutPanel4.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.Controls.Add(this.groupBox5, 0, 1);
-            this.tableLayoutPanel4.Controls.Add(this.groupBox7, 0, 0);
-            this.tableLayoutPanel4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel4.Location = new System.Drawing.Point(3, 18);
-            this.tableLayoutPanel4.Name = "tableLayoutPanel4";
-            this.tableLayoutPanel4.RowCount = 2;
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel4.Size = new System.Drawing.Size(285, 165);
-            this.tableLayoutPanel4.TabIndex = 0;
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(59, 20);
+            this.toolStripStatusLabel1.Text = "lsslslslsl";
             // 
-            // groupBox7
+            // graph1
             // 
-            this.groupBox7.Controls.Add(this.tableLayoutPanel5);
-            this.groupBox7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox7.Location = new System.Drawing.Point(3, 3);
-            this.groupBox7.Name = "groupBox7";
-            this.groupBox7.Size = new System.Drawing.Size(279, 76);
-            this.groupBox7.TabIndex = 2;
-            this.groupBox7.TabStop = false;
-            this.groupBox7.Text = "Field separator";
-            // 
-            // tableLayoutPanel5
-            // 
-            this.tableLayoutPanel5.ColumnCount = 2;
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel5.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel5.Controls.Add(this.radioButton4, 1, 1);
-            this.tableLayoutPanel5.Controls.Add(this.radioButton3, 0, 1);
-            this.tableLayoutPanel5.Controls.Add(this.radioButton2, 1, 0);
-            this.tableLayoutPanel5.Controls.Add(this.radioButton1, 0, 0);
-            this.tableLayoutPanel5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel5.Location = new System.Drawing.Point(3, 18);
-            this.tableLayoutPanel5.Name = "tableLayoutPanel5";
-            this.tableLayoutPanel5.RowCount = 2;
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel5.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel5.Size = new System.Drawing.Size(273, 55);
-            this.tableLayoutPanel5.TabIndex = 0;
-            // 
-            // radioButton1
-            // 
-            this.radioButton1.AutoSize = true;
-            this.radioButton1.Location = new System.Drawing.Point(3, 3);
-            this.radioButton1.Name = "radioButton1";
-            this.radioButton1.Size = new System.Drawing.Size(110, 21);
-            this.radioButton1.TabIndex = 0;
-            this.radioButton1.TabStop = true;
-            this.radioButton1.Text = "radioButton1";
-            this.radioButton1.UseVisualStyleBackColor = true;
-            // 
-            // radioButton2
-            // 
-            this.radioButton2.AutoSize = true;
-            this.radioButton2.Location = new System.Drawing.Point(139, 3);
-            this.radioButton2.Name = "radioButton2";
-            this.radioButton2.Size = new System.Drawing.Size(110, 21);
-            this.radioButton2.TabIndex = 1;
-            this.radioButton2.TabStop = true;
-            this.radioButton2.Text = "radioButton2";
-            this.radioButton2.UseVisualStyleBackColor = true;
-            // 
-            // radioButton3
-            // 
-            this.radioButton3.AutoSize = true;
-            this.radioButton3.Location = new System.Drawing.Point(3, 30);
-            this.radioButton3.Name = "radioButton3";
-            this.radioButton3.Size = new System.Drawing.Size(110, 21);
-            this.radioButton3.TabIndex = 2;
-            this.radioButton3.TabStop = true;
-            this.radioButton3.Text = "radioButton3";
-            this.radioButton3.UseVisualStyleBackColor = true;
-            // 
-            // radioButton4
-            // 
-            this.radioButton4.AutoSize = true;
-            this.radioButton4.Location = new System.Drawing.Point(139, 30);
-            this.radioButton4.Name = "radioButton4";
-            this.radioButton4.Size = new System.Drawing.Size(110, 21);
-            this.radioButton4.TabIndex = 3;
-            this.radioButton4.TabStop = true;
-            this.radioButton4.Text = "radioButton4";
-            this.radioButton4.UseVisualStyleBackColor = true;
-            // 
-            // groupBox8
-            // 
-            this.groupBox8.Controls.Add(this.tableLayoutPanel7);
-            this.groupBox8.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox8.Location = new System.Drawing.Point(0, 0);
-            this.groupBox8.Name = "groupBox8";
-            this.groupBox8.Size = new System.Drawing.Size(804, 394);
-            this.groupBox8.TabIndex = 0;
-            this.groupBox8.TabStop = false;
-            this.groupBox8.Text = "Graphs";
-            // 
-            // groupBox9
-            // 
-            this.groupBox9.Controls.Add(this.textBox3);
-            this.groupBox9.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox9.Location = new System.Drawing.Point(0, 0);
-            this.groupBox9.Name = "groupBox9";
-            this.groupBox9.Size = new System.Drawing.Size(804, 149);
-            this.groupBox9.TabIndex = 1;
-            this.groupBox9.TabStop = false;
-            this.groupBox9.Text = "Statistics";
-            // 
-            // splitContainer1
-            // 
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(3, 18);
-            this.splitContainer1.Name = "splitContainer1";
-            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.groupBox8);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.groupBox9);
-            this.splitContainer1.Size = new System.Drawing.Size(804, 547);
-            this.splitContainer1.SplitterDistance = 394;
-            this.splitContainer1.TabIndex = 2;
-            // 
-            // tableLayoutPanel7
-            // 
-            this.tableLayoutPanel7.ColumnCount = 1;
-            this.tableLayoutPanel7.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel7.Controls.Add(this.pictureBox1, 0, 0);
-            this.tableLayoutPanel7.Controls.Add(this.groupBox11, 0, 1);
-            this.tableLayoutPanel7.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel7.Location = new System.Drawing.Point(3, 18);
-            this.tableLayoutPanel7.Name = "tableLayoutPanel7";
-            this.tableLayoutPanel7.RowCount = 2;
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel7.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 70F));
-            this.tableLayoutPanel7.Size = new System.Drawing.Size(798, 373);
-            this.tableLayoutPanel7.TabIndex = 1;
-            // 
-            // groupBox11
-            // 
-            this.groupBox11.Controls.Add(this.radioButton10);
-            this.groupBox11.Controls.Add(this.radioButton9);
-            this.groupBox11.Controls.Add(this.radioButton8);
-            this.groupBox11.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox11.Location = new System.Drawing.Point(3, 306);
-            this.groupBox11.Name = "groupBox11";
-            this.groupBox11.Size = new System.Drawing.Size(792, 64);
-            this.groupBox11.TabIndex = 1;
-            this.groupBox11.TabStop = false;
-            this.groupBox11.Text = "Display options";
-            // 
-            // pictureBox1
-            // 
-            this.pictureBox1.BackColor = System.Drawing.SystemColors.AppWorkspace;
-            this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureBox1.Location = new System.Drawing.Point(3, 3);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(792, 297);
-            this.pictureBox1.TabIndex = 2;
-            this.pictureBox1.TabStop = false;
-            // 
-            // radioButton8
-            // 
-            this.radioButton8.AutoSize = true;
-            this.radioButton8.Dock = System.Windows.Forms.DockStyle.Left;
-            this.radioButton8.Location = new System.Drawing.Point(3, 18);
-            this.radioButton8.Name = "radioButton8";
-            this.radioButton8.Size = new System.Drawing.Size(110, 43);
-            this.radioButton8.TabIndex = 0;
-            this.radioButton8.TabStop = true;
-            this.radioButton8.Text = "radioButton8";
-            this.radioButton8.UseVisualStyleBackColor = true;
-            // 
-            // radioButton9
-            // 
-            this.radioButton9.AutoSize = true;
-            this.radioButton9.Dock = System.Windows.Forms.DockStyle.Left;
-            this.radioButton9.Location = new System.Drawing.Point(113, 18);
-            this.radioButton9.Name = "radioButton9";
-            this.radioButton9.Size = new System.Drawing.Size(110, 43);
-            this.radioButton9.TabIndex = 1;
-            this.radioButton9.TabStop = true;
-            this.radioButton9.Text = "radioButton9";
-            this.radioButton9.UseVisualStyleBackColor = true;
-            // 
-            // radioButton10
-            // 
-            this.radioButton10.AutoSize = true;
-            this.radioButton10.Dock = System.Windows.Forms.DockStyle.Left;
-            this.radioButton10.Location = new System.Drawing.Point(223, 18);
-            this.radioButton10.Name = "radioButton10";
-            this.radioButton10.Size = new System.Drawing.Size(118, 43);
-            this.radioButton10.TabIndex = 2;
-            this.radioButton10.TabStop = true;
-            this.radioButton10.Text = "radioButton10";
-            this.radioButton10.UseVisualStyleBackColor = true;
-            // 
-            // textBox3
-            // 
-            this.textBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox3.Location = new System.Drawing.Point(3, 18);
-            this.textBox3.Multiline = true;
-            this.textBox3.Name = "textBox3";
-            this.textBox3.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox3.Size = new System.Drawing.Size(798, 128);
-            this.textBox3.TabIndex = 0;
-            // 
-            // radioButton5
-            // 
-            this.radioButton5.AutoSize = true;
-            this.radioButton5.Dock = System.Windows.Forms.DockStyle.Left;
-            this.radioButton5.Location = new System.Drawing.Point(3, 18);
-            this.radioButton5.Name = "radioButton5";
-            this.radioButton5.Size = new System.Drawing.Size(110, 56);
-            this.radioButton5.TabIndex = 0;
-            this.radioButton5.TabStop = true;
-            this.radioButton5.Text = "radioButton5";
-            this.radioButton5.UseVisualStyleBackColor = true;
-            // 
-            // radioButton6
-            // 
-            this.radioButton6.AutoSize = true;
-            this.radioButton6.Dock = System.Windows.Forms.DockStyle.Left;
-            this.radioButton6.Location = new System.Drawing.Point(113, 18);
-            this.radioButton6.Name = "radioButton6";
-            this.radioButton6.Size = new System.Drawing.Size(110, 56);
-            this.radioButton6.TabIndex = 1;
-            this.radioButton6.TabStop = true;
-            this.radioButton6.Text = "radioButton6";
-            this.radioButton6.UseVisualStyleBackColor = true;
-            // 
-            // radioButton7
-            // 
-            this.radioButton7.AutoSize = true;
-            this.radioButton7.Dock = System.Windows.Forms.DockStyle.Left;
-            this.radioButton7.Location = new System.Drawing.Point(223, 18);
-            this.radioButton7.Name = "radioButton7";
-            this.radioButton7.Size = new System.Drawing.Size(110, 56);
-            this.radioButton7.TabIndex = 2;
-            this.radioButton7.TabStop = true;
-            this.radioButton7.Text = "radioButton7";
-            this.radioButton7.UseVisualStyleBackColor = true;
-            // 
-            // groupBox2
-            // 
-            this.tableLayoutPanel2.SetColumnSpan(this.groupBox2, 2);
-            this.groupBox2.Controls.Add(this.listBox1);
-            this.groupBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.groupBox2.Location = new System.Drawing.Point(3, 33);
-            this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(279, 128);
-            this.groupBox2.TabIndex = 1;
-            this.groupBox2.TabStop = false;
-            this.groupBox2.Text = "Channels";
-            // 
-            // listBox1
-            // 
-            this.listBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.listBox1.FormattingEnabled = true;
-            this.listBox1.ItemHeight = 16;
-            this.listBox1.Location = new System.Drawing.Point(3, 18);
-            this.listBox1.Name = "listBox1";
-            this.listBox1.ScrollAlwaysVisible = true;
-            this.listBox1.Size = new System.Drawing.Size(273, 107);
-            this.listBox1.TabIndex = 0;
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.ColumnCount = 2;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Controls.Add(this.button2, 1, 0);
-            this.tableLayoutPanel2.Controls.Add(this.groupBox2, 0, 1);
-            this.tableLayoutPanel2.Controls.Add(this.button1, 0, 0);
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(3, 18);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 2;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(285, 164);
-            this.tableLayoutPanel2.TabIndex = 0;
-            // 
-            // button2
-            // 
-            this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button2.Location = new System.Drawing.Point(145, 3);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(137, 24);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "button2";
-            this.button2.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.button1.Location = new System.Drawing.Point(3, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(136, 24);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
+            this.graph1.BackColorLegend = System.Drawing.SystemColors.Control;
+            this.graph1.Location = new System.Drawing.Point(3, 3);
+            this.graph1.Name = "graph1";
+            this.graph1.Size = new System.Drawing.Size(567, 296);
+            this.graph1.TabIndex = 2;
             // 
             // Form1
             // 
@@ -588,33 +585,32 @@
             this.Name = "Form1";
             this.Text = "Form1";
             this.groupBox1.ResumeLayout(false);
+            this.tableLayoutPanel2.ResumeLayout(false);
+            this.groupBox2.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
-            this.groupBox5.ResumeLayout(false);
-            this.groupBox5.PerformLayout();
-            this.groupBox4.ResumeLayout(false);
-            this.groupBox3.ResumeLayout(false);
-            this.statusStrip1.ResumeLayout(false);
-            this.statusStrip1.PerformLayout();
             this.groupBox6.ResumeLayout(false);
-            this.tableLayoutPanel3.ResumeLayout(false);
-            this.tableLayoutPanel3.PerformLayout();
-            this.tableLayoutPanel4.ResumeLayout(false);
-            this.groupBox7.ResumeLayout(false);
-            this.tableLayoutPanel5.ResumeLayout(false);
-            this.tableLayoutPanel5.PerformLayout();
-            this.groupBox8.ResumeLayout(false);
-            this.groupBox9.ResumeLayout(false);
-            this.groupBox9.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
+            this.groupBox8.ResumeLayout(false);
             this.tableLayoutPanel7.ResumeLayout(false);
             this.groupBox11.ResumeLayout(false);
             this.groupBox11.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
-            this.groupBox2.ResumeLayout(false);
-            this.tableLayoutPanel2.ResumeLayout(false);
+            this.groupBox9.ResumeLayout(false);
+            this.groupBox9.PerformLayout();
+            this.groupBox4.ResumeLayout(false);
+            this.tableLayoutPanel4.ResumeLayout(false);
+            this.groupBox5.ResumeLayout(false);
+            this.groupBox5.PerformLayout();
+            this.groupBox7.ResumeLayout(false);
+            this.tableLayoutPanel5.ResumeLayout(false);
+            this.tableLayoutPanel5.PerformLayout();
+            this.groupBox3.ResumeLayout(false);
+            this.tableLayoutPanel3.ResumeLayout(false);
+            this.tableLayoutPanel3.PerformLayout();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -647,7 +643,6 @@
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.GroupBox groupBox9;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel7;
-        private System.Windows.Forms.PictureBox pictureBox1;
         private System.Windows.Forms.GroupBox groupBox11;
         private System.Windows.Forms.RadioButton radioButton10;
         private System.Windows.Forms.RadioButton radioButton9;
@@ -662,6 +657,7 @@
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.ListBox listBox1;
         private System.Windows.Forms.Button button1;
+        private Graph graph1;
     }
 }
 

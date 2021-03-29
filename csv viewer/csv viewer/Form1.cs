@@ -15,7 +15,8 @@ namespace csv_viewer
         public Form1()
         {
             InitializeComponent();
-        }
+            graph1.BackColorLegend = Color.FromArgb(20, 20, 20, 20);
+                }
 
         private void groupBox6_Enter(object sender, EventArgs e)
         {
