@@ -22,5 +22,6 @@ namespace csv_viewer
         public static Color[] LegendColors = new Color[] { Color.Blue, Color.Red, Color.Green, Color.DarkBlue, Color.DarkRed, Color.DarkGreen };
         public static SolidBrush[] LegendBrushes = new SolidBrush[Colors];
         public static Pen[] LegendPens = new Pen[Colors];
+        public static List<int> drawable = new List<int>();
     }
 }

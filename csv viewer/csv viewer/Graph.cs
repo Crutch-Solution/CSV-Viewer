@@ -19,15 +19,16 @@ namespace csv_viewer
         public Color BackColorLegend;
         Bitmap bitmap;
         Graphics graph;
+
         public Graph()
         {
             InitializeComponent();
-         
+            Global.drawable.Clear();
         }
         public void addChannel(String name)
         {
             _channels.Add(new Channel(name, Global.LegendPens[_channels.Count%Global.Colors]));
-            draw();
+
         }
         public int getChannelIndex(string channelName)
         {
@@ -40,9 +41,8 @@ namespace csv_viewer
         public void draw()
         {
             float maxX = float.MinValue, maxY = float.MinValue, minX = float.MaxValue, minY = float.MaxValue;
-            for(int i=0;i<_channels.Count;i++)
+           foreach(var i in Global.drawable)
             {
-                
                 if (_channels[i].maxX > maxX) maxX = _channels[i].maxX;
                 if (_channels[i].maxY > maxY) maxY = _channels[i].maxY;
                 if (_channels[i].minX < minX) minX = _channels[i].minX;
@@ -78,21 +78,28 @@ namespace csv_viewer
             //graph.FillRectangle(Brushes.Red, minX-10, minY-10, 20, 20);
             //graph.ScaleTransform(pictureBox1.Width / (maxX - minY), -pictureBox1.Height / (maxY - minY));
             //graph.TranslateTransform(-minX, pictureBox1.Height / (pictureBox1.Height / (maxY - minY)) + minY / (pictureBox1.Height / (maxY - minY)));
-            for (int i = 0; i < _channels.Count; i++)
+            foreach (var i in Global.drawable)
             {
                 _channels[i].draw(ref graph);
             }
             if (checkBox1.Checked)
             {
-                for (float i = minX; i < maxX; i += (maxX - minX) / 10.0f)
+                float xStep = (maxX - minX) / 10.0f;
+                for (float i = minX; i < 0; i += xStep)
                     graph.DrawLine(Pens.Gray, i, minY, i, maxY);
-                for (float i = minY; i < maxY; i += (maxY - minY) / 10.0f)
+                for (float i = 0; i < maxX; i += xStep)
+                    graph.DrawLine(Pens.Gray, i, minY, i, maxY);
+
+                float yStep = (maxY - minY) / 10.0f;
+                for (float i = minY; i < 0; i += yStep)
+                    graph.DrawLine(Pens.Gray, minX, i, maxX, i);
+                for (float i = 0; i < maxY; i += yStep)
                     graph.DrawLine(Pens.Gray, minX, i, maxX, i);
             }
             if (checkBox2.Checked)
             {
-                    graph.DrawLine(new Pen(Color.Black, 2), 0, minY, 0, maxY);
-                    graph.DrawLine(new Pen(Color.Black, 2), minX, 0, maxX,0);
+                    graph.DrawLine(new Pen(Color.Black, 3), 0, minY, 0, maxY);
+                    graph.DrawLine(new Pen(Color.Black, 3), minX, 0, maxX,0);
             }
             if (checkBox3.Checked)
             {
@@ -109,6 +116,11 @@ namespace csv_viewer
         public void setChannesl(List<Channel> list)
         {
             _channels = list;
+            if (Global.drawable.Count == 0)
+            {
+                for (int i = 0; i < 5 && i < _channels.Count; i++)
+                    Global.drawable.Add(i);
+            }
             draw();
         }
         private void Graph_Resize(object sender, EventArgs e)

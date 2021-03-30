@@ -26,6 +26,11 @@ namespace csv_viewer
         }
         public void callback(List<Channel> list)
         {
+            if (listBox1.Items.Count != list.Count)
+            {
+                foreach (var i in list)
+                    listBox1.Items.Add(i.Name);
+            }
             graph2.setChannesl(list);
         }
         private void button1_Click(object sender, EventArgs e)
@@ -40,6 +45,16 @@ namespace csv_viewer
 
                 }
             }
+        }
+
+        private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            Global.drawable.Clear();
+            foreach (var i in listBox1.SelectedIndices)
+            {
+                Global.drawable.Add(Convert.ToInt32(i));
+            }
+            graph2.draw();
         }
     }
 }
