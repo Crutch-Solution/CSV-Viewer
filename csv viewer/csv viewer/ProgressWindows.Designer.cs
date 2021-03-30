@@ -78,6 +78,10 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.progressBar1);
+            this.MaximizeBox = false;
+            this.MaximumSize = new System.Drawing.Size(668, 230);
+            this.MinimizeBox = false;
+            this.MinimumSize = new System.Drawing.Size(668, 230);
             this.Name = "ProgressWindows";
             this.Text = "ProgressWindows";
             this.ResumeLayout(false);

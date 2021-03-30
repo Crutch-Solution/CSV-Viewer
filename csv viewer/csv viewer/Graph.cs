@@ -40,7 +40,7 @@ namespace csv_viewer
         public void draw()
         {
             float maxX = float.MinValue, maxY = float.MinValue, minX = float.MaxValue, minY = float.MaxValue;
-            for(int i=0;i<15 && i<_channels.Count;i++)
+            for(int i=0;i<_channels.Count;i++)
             {
                 
                 if (_channels[i].maxX > maxX) maxX = _channels[i].maxX;
@@ -49,41 +49,59 @@ namespace csv_viewer
                 if (_channels[i].minY < minY) minY = _channels[i].minY;
             }
             if (maxX - minX == 0 || maxY - minY == 0) return;
-
             //graph.ScaleTransform(1.0F, -1.0F);
-            //maxX = 100;
-            //maxY = 200;
-            //minX = 30;
-            //minY = 50;
+             //maxX += 10;
+             //maxY += 10;
+             //minX += 10;
+             //minY += 10;
             //
             graph.ResetTransform();
 
             graph.Clear(Color.White);
-            if (Math.Round(minY) == -964)
-            {
-            }
             graph.ScaleTransform(1.0f, -1.0f); //flipped;
+            graph.TranslateTransform(0, -bitmap.Height);
 
-
-            float Xscale = pictureBox1.Width / (maxX - minX), Yscace = pictureBox1.Height / (maxY - minY);
+            float Xscale = pictureBox1.Width / (maxX - minX), 
+                Yscace = pictureBox1.Height / (maxY - minY);
             graph.ScaleTransform(Xscale, Yscace); //scaled
-            graph.TranslateTransform(-minX / Xscale, (pictureBox1.Height + minY) / Yscace); //transformed
+            graph.TranslateTransform(-minX, -minY);
+            //  graph.TranslateTransform(-minX / Xscale, (pictureBox1.Height + minY) / Yscace); //transformed
 
-
+            //graph.FillEllipse(Brushes.Red, minX - 4, minY - 4, 8, 8);
+            //graph.FillEllipse(Brushes.Red, minX - 4, maxY - 4, 8, 8);
+            //graph.FillEllipse(Brushes.Red, maxX - 4, minY - 4, 8, 8);
+            //graph.FillEllipse(Brushes.Red, maxX - 4, maxY - 4, 8, 8);
+            //graph.FillEllipse(Brushes.Red, (maxX + minX) / 2 - 4, (maxY + minY) / 2 - 4, 8, 8);
+            // pictureBox1.Image = bitmap;
+            // pictureBox1.Refresh();
+            //return;
             //graph.FillRectangle(Brushes.Red, minX-10, minY-10, 20, 20);
             //graph.ScaleTransform(pictureBox1.Width / (maxX - minY), -pictureBox1.Height / (maxY - minY));
             //graph.TranslateTransform(-minX, pictureBox1.Height / (pictureBox1.Height / (maxY - minY)) + minY / (pictureBox1.Height / (maxY - minY)));
-            for (int i = 0; i<15 && i < _channels.Count; i++)
+            for (int i = 0; i < _channels.Count; i++)
             {
                 _channels[i].draw(ref graph);
             }
-
-            graph.ResetTransform();
-            graph.FillRectangle(new SolidBrush(BackColorLegend), 20, 20, 200, 20 * _channels.Count);
-
-            for (int i = 0; i<15 && i < _channels.Count; i++)
+            if (checkBox1.Checked)
             {
-                graph.DrawString(_channels[i].Name, new Font("Arial", 12), Global.LegendBrushes[i % Global.Colors], 20, 20 + 20 * i);
+                for (float i = minX; i < maxX; i += (maxX - minX) / 10.0f)
+                    graph.DrawLine(Pens.Gray, i, minY, i, maxY);
+                for (float i = minY; i < maxY; i += (maxY - minY) / 10.0f)
+                    graph.DrawLine(Pens.Gray, minX, i, maxX, i);
+            }
+            if (checkBox2.Checked)
+            {
+                    graph.DrawLine(new Pen(Color.Black, 2), 0, minY, 0, maxY);
+                    graph.DrawLine(new Pen(Color.Black, 2), minX, 0, maxX,0);
+            }
+            if (checkBox3.Checked)
+            {
+                graph.ResetTransform();
+                graph.FillRectangle(new SolidBrush(BackColorLegend), 20, 20, 200, 20 * _channels.Count);
+                for (int i = 0; i < _channels.Count; i++)
+                {
+                    graph.DrawString(_channels[i].Name, new Font("Arial", 12), Global.LegendBrushes[i % Global.Colors], 20, 20 + 20 * i);
+                }
             }
             pictureBox1.Image = bitmap;
             pictureBox1.Refresh();
@@ -109,6 +127,21 @@ namespace csv_viewer
             {
 
             }
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            draw();
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            draw();
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            draw();
         }
     }
     public class Channel
