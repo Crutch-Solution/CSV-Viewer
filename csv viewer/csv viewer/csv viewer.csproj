@@ -52,7 +52,10 @@
     <Compile Include="Form1.Designer.cs">
       <DependentUpon>Form1.cs</DependentUpon>
     </Compile>
-    <Compile Include="Graph.cs" />
+    <Compile Include="Global.cs" />
+    <Compile Include="Graph.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Graph.Designer.cs">
       <DependentUpon>Graph.cs</DependentUpon>
     </Compile>
