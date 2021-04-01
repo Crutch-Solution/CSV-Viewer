@@ -12,7 +12,7 @@ namespace csv_viewer
 {
     public partial class ProgressWindows : Form
     {
-        delegate void del();
+       
         string Path;
         Form1 father;
         int maximum;
@@ -30,18 +30,23 @@ namespace csv_viewer
             main = new Thread(new ThreadStart(openfile));
             main.Start();
         }
-        public List<Channel> list;
         public void openfile()
         {
-            list = new List<Channel>();
+            List<List<PointF>> values = new List<List<PointF>>();
             using (StreamReader reader = new StreamReader(Path))
             {
-                string line = reader.ReadLine();
-                for (int i= 0; i< line.Split('\t').Length-1; i++)
-                    list.Add(new Channel(line.Split('\t')[i+1], Global.LegendPens[i % Global.Colors]));
-
                 int prev = 0;
+                string line = reader.ReadLine();
                 current = line.Length;
+                List<string> names = new List<string>();
+                for (int i = 0; i < line.Split('\t').Length - 1; i++)
+                {
+                    names.Add(line.Split('\t')[i + 1]);
+                    values.Add(new List<PointF>());
+                }
+
+                callBackNames(names);
+
                 while (!reader.EndOfStream)
                 {
                     line = reader.ReadLine();
@@ -58,7 +63,7 @@ namespace csv_viewer
                             {
                                 continue;
                             }
-                            list[i].add(new PointF(Convert.ToSingle(line.Split('\t')[0]), Convert.ToSingle(line.Split('\t')[i + 1])));
+                            values[i].Add(new PointF(Convert.ToSingle(line.Split('\t')[0]), Convert.ToSingle(line.Split('\t')[i + 1])));
                             // label1.Text = i.ToString();
                         }
                     }catch(Exception ex)
@@ -67,10 +72,12 @@ namespace csv_viewer
                     }
                     current += line.Length;
 
-                    if ((current - prev) / (maximum*1.0f) * 100 > 0)
+                    if ((current - prev) / (maximum*1.0f) * 100 > 5)
                     {
                         prev = current;
-                        callBack();
+                        callBackValues(values);
+                        foreach (var i in values)
+                            i.Clear();
                     }
 
 
@@ -79,18 +86,32 @@ namespace csv_viewer
                    
             }
         }
-        public void callBack()
+        delegate void delNames(List<string> names);
+        delegate void delValues(List<List<PointF>> values);
+        public void callBackNames(List<string> names)
         {
             if (progressBar1.InvokeRequired)
             {
-                Invoke(new del(callBack));
+                Invoke(new delNames(callBackNames), names);
             }
             else
             {
                 progressBar1.Value = current;
                 progressBar1.Refresh();
-                father.callback(list);
-                label1.Text = (temp++).ToString();
+                father.callbackNames(names);
+            }
+        }
+        public void callBackValues(List<List<PointF>> values)
+        {
+            if (progressBar1.InvokeRequired)
+            {
+                Invoke(new delValues(callBackValues), values);
+            }
+            else
+            {
+                progressBar1.Value = current;
+                progressBar1.Refresh();
+                father.callbackValues(values);
             }
         }
         int temp = 0;

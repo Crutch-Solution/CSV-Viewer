@@ -24,14 +24,15 @@ namespace csv_viewer
         {
 
         }
-        public void callback(List<Channel> list)
+        public void callbackNames(List<string> names)
         {
-            if (listBox1.Items.Count != list.Count)
-            {
-                foreach (var i in list)
-                    listBox1.Items.Add(i.Name);
-            }
-            graph2.setChannesl(list);
+            foreach (var i in names)
+                listBox1.Items.Add(i);
+            graph2.setChannelsNames(names);
+        }
+        public void callbackValues(List<List<PointF>> values)
+        {
+            graph2.setChannelsValues(values);
         }
         private void button1_Click(object sender, EventArgs e)
         {
@@ -54,6 +55,7 @@ namespace csv_viewer
             {
                 Global.drawable.Add(Convert.ToInt32(i));
             }
+            graph2.scale();
             graph2.draw();
         }
     }
