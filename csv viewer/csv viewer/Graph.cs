@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Drawing.Design;
+using System.Threading;
 
 namespace csv_viewer
 {
@@ -22,6 +23,8 @@ namespace csv_viewer
         Bitmap bitmap;
         Graphics graph;
         float maxX, maxY, minX, minY;
+        float Xscale = 1;
+        float Yscace = 1;
         public Graph()
         {
             InitializeComponent();
@@ -53,22 +56,25 @@ namespace csv_viewer
             }
             if (maxX - minX == 0 || maxY - minY == 0) return;
 
-            graph.ResetTransform();
 
-            graph.Clear(Color.White);
-            graph.ScaleTransform(1.0f, -1.0f); //flipped;
-            graph.TranslateTransform(0, -bitmap.Height);
 
-            float Xscale = pictureBox1.Width / (maxX - minX);
-            float Yscace = pictureBox1.Height / (maxY - minY);
-            //graph.ScaleTransform(Xscale, Yscace); //useless, transfrom linewidth aswell
-            //graph.TranslateTransform(-minX, -minY);
-            graph.TranslateTransform(-minX * Xscale, -minY * Yscace);
+            Xscale = pictureBox1.Width / (maxX - minX);
+            Yscace = pictureBox1.Height / (maxY - minY);
+
+
+
             foreach (var i in _channels)
                 i.scale(Xscale, Yscace);
         }
         public void drawValues()
         {
+            graph.Clear(Color.White);
+            graph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            graph.ResetTransform();
+            graph.ScaleTransform(1.0f, -1.0f); //flipped;
+            graph.TranslateTransform(0, -bitmap.Height);
+            graph.TranslateTransform(-minX * Xscale, -minY * Yscace);
+
             foreach (var i in Global.drawable)
             {
                 _channels[i].draw(ref graph);
@@ -78,47 +84,65 @@ namespace csv_viewer
         }
         public void drawAxes()
         {
-            graph.DrawLine(new Pen(Color.Black, 3), 0, minY, 0, maxY);
-            graph.DrawLine(new Pen(Color.Black, 3), minX, 0, maxX, 0);
+            graph.ResetTransform();
+            graph.ScaleTransform(1.0f, -1.0f); //flipped;
+            graph.TranslateTransform(0, -bitmap.Height);
+            graph.TranslateTransform(-minX * Xscale, -minY * Yscace);
+
+            graph.DrawLine(new Pen(Color.Black, 3), 0, minY * Yscace, 0, maxY * Yscace);
+            graph.DrawLine(new Pen(Color.Black, 3), minX * Xscale, 0, maxX * Xscale, 0);
             pictureBox1.Image = bitmap;
             pictureBox1.Refresh();
         }
         public void drawLegend()
         {
             graph.ResetTransform();
-            graph.FillRectangle(new SolidBrush(BackColorLegend), 20, 20, 200, 20 * _channels.Count);
-            for (int i = 0; i < _channels.Count; i++)
+            float X=1, Y=1;
+            foreach (var i in Global.drawable)
             {
-                graph.DrawString(_channels[i].Name, new Font("Arial", 12), Global.LegendBrushes[i % Global.Colors], 20, 20 + 20 * i);
+                if(graph.MeasureString(_channels[i].Name, new Font("Arial", 12)).Width>X)
+                     X = graph.MeasureString(_channels[i].Name, new Font("Arial", 12)).Width;
+               if(graph.MeasureString(_channels[i].Name, new Font("Arial", 12)).Height>Y)
+                    Y = graph.MeasureString(_channels[i].Name, new Font("Arial", 12)).Height;
+            }
+            graph.FillRectangle(new SolidBrush(BackColorLegend), 20, 20, X, Y * Global.drawable.Count);
+            int index = 0;
+            foreach(var i in Global.drawable)
+            {
+                graph.DrawString(_channels[i].Name, new Font("Arial", 12), Global.LegendBrushes[i % Global.Colors], 20, 20 + 20 * index++);
             }
             pictureBox1.Image = bitmap;
             pictureBox1.Refresh();
         }
         public void drawGrid()
         {
-            float xStep = (maxX - minX) / 10.0f;
-            for (float i = minX; i < 0; i += xStep)
-                graph.DrawLine(Pens.Gray, i, minY, i, maxY);
-            for (float i = 0; i < maxX; i += xStep)
-                graph.DrawLine(Pens.Gray, i, minY, i, maxY);
+            graph.ResetTransform();
+            graph.ScaleTransform(1.0f, -1.0f); //flipped;
+            graph.TranslateTransform(0, -bitmap.Height);
+            graph.TranslateTransform(-minX * Xscale, -minY * Yscace);
 
-            float yStep = (maxY - minY) / 10.0f;
-            for (float i = minY; i < 0; i += yStep)
-                graph.DrawLine(Pens.Gray, minX, i, maxX, i);
-            for (float i = 0; i < maxY; i += yStep)
-                graph.DrawLine(Pens.Gray, minX, i, maxX, i);
+            float xStep = (maxX - minX) / 10.0f * Xscale;
+            for (float i = minX * Xscale; i < 0; i += xStep)
+                graph.DrawLine(Pens.Gray, i, minY*Yscace, i, maxY * Yscace);
+            for (float i = 0; i < maxX * Xscale; i += xStep)
+                graph.DrawLine(Pens.Gray, i, minY * Yscace, i, maxY * Yscace);
+
+            float yStep = (maxY - minY) / 10.0f * Yscace;
+            for (float i = minY * Yscace; i < 0; i += yStep)
+                graph.DrawLine(Pens.Gray, minX * Xscale, i, maxX* Xscale, i);
+            for (float i = 0; i < maxY * Yscace; i += yStep)
+                graph.DrawLine(Pens.Gray, minX * Xscale, i, maxX*Xscale, i);
             pictureBox1.Image = bitmap;
             pictureBox1.Refresh();
         }
         public void setChannelsNames(List<string> names)
         {
+
             Global.drawable.Clear();
             _channels = new List<Channel>();
             int colorIndex = 0;
             foreach (var i in names)
             {
-                if(colorIndex<5)
-                    Global.drawable.Add(colorIndex);
                 _channels.Add(new Channel(i, Global.LegendPens[colorIndex++ % Global.Colors]));
             }
 
@@ -126,11 +150,15 @@ namespace csv_viewer
         }
         public void setChannelsValues(List<List<PointF>> values)
         {
+            // Thread.Sleep(1000);
             for (int i = 0; i < _channels.Count; i++)
-                for (int j = 0; j < values[i].Count; j++)
-                    _channels[i].add(values[i][j]);
+            {
+                _channels[i].values.AddRange(values[i]);
+                _channels[i].recalculateStatistics();
+            }
             scale();
             draw();
+
         }
         private void Graph_Resize(object sender, EventArgs e)
         {
@@ -138,12 +166,10 @@ namespace csv_viewer
             {
                 bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
                 graph = Graphics.FromImage(bitmap);
-                graph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                pictureBox1.Image = bitmap;
-                graph.ScaleTransform(1.0F, -1.0F);
-                graph.TranslateTransform(0, -bitmap.Height);
+
                 scale();
                 draw();
+
             }
             catch(Exception ex)
             {
@@ -153,18 +179,20 @@ namespace csv_viewer
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox3.Checked)
+            if (checkBox1.Checked)
                 draw += drawGrid;
             else
                 draw -= drawGrid;
+            draw();
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox3.Checked)
+            if (checkBox2.Checked)
                 draw += drawAxes;
             else
                 draw -= drawAxes;
+            draw();
         }
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
@@ -173,8 +201,15 @@ namespace csv_viewer
                 draw += drawLegend;
             else
                 draw -= drawLegend;
+            draw();
         }
-
+        public void clear()
+        {
+            _channels.Clear();
+            graph.Clear(Color.White);
+            pictureBox1.Image = bitmap;
+            Refresh();
+        }
         public class Channel
         {
             public List<PointF> values = new List<PointF>();
@@ -190,7 +225,7 @@ namespace csv_viewer
                 values.Add(val);
                 recalculateStatistics();
             }
-            void recalculateStatistics()
+            public void recalculateStatistics()
             {
                 avg = values.Average(x => x.Y);
                 minX = values.Min(x => x.X);
@@ -211,6 +246,7 @@ namespace csv_viewer
                 if (values.Count > 1)
                     graph.DrawLines(pen, scaled.ToArray());
             }
+
         }
     }
 

@@ -120,12 +120,14 @@
             // button2
             // 
             this.button2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.button2.Enabled = false;
             this.button2.Location = new System.Drawing.Point(147, 3);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(138, 24);
             this.button2.TabIndex = 1;
             this.button2.Text = "Close";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // groupBox2
             // 
@@ -535,7 +537,7 @@
             this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.statusStrip1);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "CSV Viewer";
             this.groupBox1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);

@@ -18,6 +18,7 @@ namespace csv_viewer
             }
 
         }
+        public static object obj = new object();
         public static int Colors = 6;
         public static Color[] LegendColors = new Color[] { Color.Blue, Color.Red, Color.Green, Color.DarkBlue, Color.DarkRed, Color.DarkGreen };
         public static SolidBrush[] LegendBrushes = new SolidBrush[Colors];

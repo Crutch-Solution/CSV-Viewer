@@ -15,28 +15,29 @@ namespace csv_viewer
        
         string Path;
         Form1 father;
-        int maximum;
-        int current;
+        double maximum;
+        double current;
         Thread main;
         public ProgressWindows(string path, Form1 father)
         {
             InitializeComponent();
             Path = path;
             this.father = father;
-            progressBar1.Maximum = (int)new FileInfo(Path).Length;
-            maximum = progressBar1.Maximum;
+            maximum = new FileInfo(Path).Length;
             progressBar1.Value = 0;
-            List<string> lines = new List<string>();
-            main = new Thread(new ThreadStart(openfile));
-            main.Start();
+            this.Text = "In progress...";
+            label1.Text = $"Opening CSV file: '{path}'";
+            label2.Text = "0%";
+
         }
         public void openfile()
         {
             List<List<PointF>> values = new List<List<PointF>>();
             using (StreamReader reader = new StreamReader(Path))
             {
-                int prev = 0;
+
                 string line = reader.ReadLine();
+                string[] row;
                 current = line.Length;
                 List<string> names = new List<string>();
                 for (int i = 0; i < line.Split('\t').Length - 1; i++)
@@ -46,24 +47,25 @@ namespace csv_viewer
                 }
 
                 callBackNames(names);
-
+                System.Diagnostics.Stopwatch watch = System.Diagnostics.Stopwatch.StartNew();
                 while (!reader.EndOfStream)
                 {
                     line = reader.ReadLine();
                     try
                     {
-                        for (int i = 0; i < line.Split('\t').Length - 1; i++)
+                        row = line.Split('\t');
+                        for (int i = 0; i < row.Length - 1; i++)
                         {
                             try
                             {
-                                Convert.ToSingle(line.Split('\t')[i + 1]);
+                                Convert.ToSingle(row[i + 1]);
                             }
                             catch
                                 (Exception ex)
                             {
                                 continue;
                             }
-                            values[i].Add(new PointF(Convert.ToSingle(line.Split('\t')[0]), Convert.ToSingle(line.Split('\t')[i + 1])));
+                            values[i].Add(new PointF(Convert.ToSingle(row[0]), Convert.ToSingle(row[i + 1])));
                             // label1.Text = i.ToString();
                         }
                     }catch(Exception ex)
@@ -72,52 +74,86 @@ namespace csv_viewer
                     }
                     current += line.Length;
 
-                    if ((current - prev) / (maximum*1.0f) * 100 > 5)
+                    if (watch.ElapsedMilliseconds > 3000)
                     {
-                        prev = current;
-                        callBackValues(values);
+                        List<List<PointF>> buff = new List<List<PointF>>();
+                        foreach(var i in values)
+                        {
+                            List<PointF> newone = new List<PointF>();
+                            foreach (var j in i)
+                                newone.Add(new PointF(j.X, j.Y));
+                            buff.Add(newone);
+                        }
+                        callBackValues(buff);
                         foreach (var i in values)
                             i.Clear();
+                        watch = System.Diagnostics.Stopwatch.StartNew();
                     }
 
 
 
                 }
-                   
+                if (values.Count != 0)
+                {
+                    List<List<PointF>> buff = new List<List<PointF>>();
+                    foreach (var i in values)
+                    {
+                        List<PointF> newone = new List<PointF>();
+                        foreach (var j in i)
+                            newone.Add(new PointF(j.X, j.Y));
+                        buff.Add(newone);
+                    }
+                    callBackValues(buff);
+                    foreach (var i in values)
+                        i.Clear();
+                }
+
             }
+            callBackCancel();
         }
-        delegate void delNames(List<string> names);
-        delegate void delValues(List<List<PointF>> values);
         public void callBackNames(List<string> names)
         {
-            if (progressBar1.InvokeRequired)
-            {
-                Invoke(new delNames(callBackNames), names);
-            }
-            else
-            {
-                progressBar1.Value = current;
-                progressBar1.Refresh();
-                father.callbackNames(names);
-            }
+            father.callbackNames(names);
         }
         public void callBackValues(List<List<PointF>> values)
         {
             if (progressBar1.InvokeRequired)
             {
-                Invoke(new delValues(callBackValues), values);
+                BeginInvoke((MethodInvoker)delegate() { callBackValues(values); });
             }
             else
             {
-                progressBar1.Value = current;
-                progressBar1.Refresh();
+                progressBar1.Value = (int)(current/maximum*100);
+                label2.Text = $"{progressBar1.Value}%";
                 father.callbackValues(values);
             }
         }
-        int temp = 0;
+        public void callBackCancel()
+        {
+            if (progressBar1.InvokeRequired)
+            {
+                BeginInvoke((MethodInvoker)delegate() { callBackCancel(); });
+            }
+            else
+            {
+                Close();
+            }
+        }
         private void button1_Click(object sender, EventArgs e)
         {
+            Close();
+        }
+
+        private void ProgressWindows_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            father.callbackCancel(Path);
             main.Abort();
+        }
+
+        private void ProgressWindows_Shown(object sender, EventArgs e)
+        {
+            main = new Thread(new ThreadStart(openfile));
+            main.Start();
         }
     }
 }

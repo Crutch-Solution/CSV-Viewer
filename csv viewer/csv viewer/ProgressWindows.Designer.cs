@@ -84,6 +84,8 @@
             this.MinimumSize = new System.Drawing.Size(668, 230);
             this.Name = "ProgressWindows";
             this.Text = "ProgressWindows";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ProgressWindows_FormClosing);
+            this.Shown += new System.EventHandler(this.ProgressWindows_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
