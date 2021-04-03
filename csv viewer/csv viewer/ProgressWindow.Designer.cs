@@ -1,6 +1,6 @@
 ﻿namespace csv_viewer
 {
-    partial class ProgressWindows
+    partial class ProgressWindow
     {
         /// <summary>
         /// Required designer variable.
@@ -67,9 +67,8 @@
             this.button1.TabIndex = 3;
             this.button1.Text = "Cancel";
             this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
-            // ProgressWindows
+            // ProgressWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -82,19 +81,17 @@
             this.MaximumSize = new System.Drawing.Size(668, 230);
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(668, 230);
-            this.Name = "ProgressWindows";
+            this.Name = "ProgressWindow";
             this.Text = "ProgressWindows";
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ProgressWindows_FormClosing);
-            this.Shown += new System.EventHandler(this.ProgressWindows_Shown);
             this.ResumeLayout(false);
             this.PerformLayout();
 
         }
 
         #endregion
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Button button1;
         public System.Windows.Forms.ProgressBar progressBar1;
+        public System.Windows.Forms.Label label1;
+        public System.Windows.Forms.Label label2;
+        public System.Windows.Forms.Button button1;
     }
 }
