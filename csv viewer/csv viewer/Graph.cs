@@ -20,6 +20,7 @@ namespace csv_viewer
         public drawGelegate draw;
         public Color BackColorLegend;
         public List<int> Drawable = new List<int>();
+        public int FontSize=8;
 
         //private fields
         static int _colorsCount = 6;
@@ -45,6 +46,7 @@ namespace csv_viewer
             draw += drawValues;
             _legendBrushes = new SolidBrush[_colorsCount];
             _legendPens = new Pen[_colorsCount];
+            pictureBox1.SizeMode = PictureBoxSizeMode.CenterImage;
             for(int i = 0; i < _colorsCount; i++)
             {
                 _legendBrushes[i] = new SolidBrush(_legendColors[i]);
@@ -66,6 +68,7 @@ namespace csv_viewer
         {
             _channels[channelIndex].add(value);
         }
+        int offsets = 5;
         public void scale()
         {
             _maxX = float.MinValue;
@@ -83,8 +86,8 @@ namespace csv_viewer
 
 
 
-            _xScale = pictureBox1.Width / (_maxX -_minX);
-            _yScale = pictureBox1.Height / (_maxY - _minY);
+            _xScale = (pictureBox1.Width - offsets*2) / (_maxX -_minX);
+            _yScale = (pictureBox1.Height - offsets * 2) / (_maxY - _minY);
 
 
 
@@ -93,32 +96,34 @@ namespace csv_viewer
         }
         public void drawValues()
         {
-            if (_channels.Count!=0 && _channels[0].Count < 2) return;
+            if (_channels.Count == 0 || _channels[0].values.Count < 2) return;
+            foreach (var i in _channels)
+                i.recalculateStatistics();
             scale();
-            
+
             _graph.Clear(Color.White);
-           _graph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-           _graph.ResetTransform();
-           _graph.ScaleTransform(1.0f, -1.0f); //flipped;
-           _graph.TranslateTransform(0, -_bitmap.Height);
-           _graph.TranslateTransform(-_minX * _xScale, -_minY * _yScale);
+            _graph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+            _graph.ResetTransform();
+            _graph.ScaleTransform(1.0f, -1.0f); //flipped;
+            _graph.TranslateTransform(0, -_bitmap.Height);
+            _graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
 
             foreach (var i in Drawable)
             {
                 _channels[i].draw(ref _graph);
             }
-            pictureBox1.Image =_bitmap;
-           // pictureBox1.Refresh();
+            pictureBox1.Image = _bitmap;
+            // pictureBox1.Refresh();
         }
         public void drawAxes()
         {
            _graph.ResetTransform();
            _graph.ScaleTransform(1.0f, -1.0f); //flipped;
            _graph.TranslateTransform(0, -_bitmap.Height);
-           _graph.TranslateTransform(-_minX * _xScale, -_minY * _yScale);
+           _graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
 
-           _graph.DrawLine(new Pen(Color.Black, 3), 0,_minY * _yScale, 0,_maxY * _yScale);
-           _graph.DrawLine(new Pen(Color.Black, 3),_minX * _xScale, 0,_maxX * _xScale, 0);
+           _graph.DrawLine(new Pen(Color.Black, 2), -1,_minY * _yScale- offsets, -1,_maxY * _yScale+ offsets);
+           _graph.DrawLine(new Pen(Color.Black, 2),_minX * _xScale- offsets, -1,_maxX * _xScale+ offsets, -1);
             pictureBox1.Image =_bitmap;
             pictureBox1.Refresh();
         }
@@ -144,23 +149,42 @@ namespace csv_viewer
         }
         public void drawGrid()
         {
-           _graph.ResetTransform();
-           _graph.ScaleTransform(1.0f, -1.0f); //flipped;
-           _graph.TranslateTransform(0, -_bitmap.Height);
-           _graph.TranslateTransform(-_minX * _xScale, -_minY * _yScale);
+            _graph.ResetTransform();
+            _graph.ScaleTransform(1.0f, -1.0f); //flipped;
+            _graph.TranslateTransform(0, -_bitmap.Height);
+            _graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
 
             float xStep = (_maxX - _minX) / 10.0f * _xScale;
-            for (float i =_minX * _xScale; i < 0; i += xStep)
-               _graph.DrawLine(Pens.Gray, i,_minY*_yScale, i,_maxY * _yScale);
-            for (float i = 0; i <_maxX * _xScale; i += xStep)
-               _graph.DrawLine(Pens.Gray, i,_minY * _yScale, i,_maxY * _yScale);
+            for (float i = 0; i > _minX * _xScale; i -= xStep)
+                _graph.DrawLine(Pens.Gray, i, _minY * _yScale - offsets, i, _maxY * _yScale + offsets);
+            for (float i = 0; i < _maxX * _xScale; i += xStep)
+                _graph.DrawLine(Pens.Gray, i, _minY * _yScale - offsets, i, _maxY * _yScale + offsets);
 
             float yStep = (_maxY - _minY) / 10.0f * _yScale;
-            for (float i =_minY * _yScale; i < 0; i += yStep)
-               _graph.DrawLine(Pens.Gray,_minX * _xScale, i,_maxX* _xScale, i);
-            for (float i = 0; i <_maxY * _yScale; i += yStep)
-               _graph.DrawLine(Pens.Gray,_minX * _xScale, i,_maxX*_xScale, i);
-            pictureBox1.Image =_bitmap;
+            for (float i = 0; i > _minY * _yScale; i -= yStep)
+                _graph.DrawLine(Pens.Gray, _minX * _xScale - offsets, i, _maxX * _xScale + offsets, i);
+            for (float i = 0; i < _maxY * _yScale; i += yStep)
+                _graph.DrawLine(Pens.Gray, _minX * _xScale - offsets, i, _maxX * _xScale + offsets, i);
+
+            //grid prompt
+            _graph.ResetTransform();
+            //_graph.ScaleTransform(1.0f, -1.0f); //flipped;
+            _graph.TranslateTransform(0, +_bitmap.Height);
+            _graph.TranslateTransform(-_minX * _xScale + offsets, +_minY * _yScale - offsets);
+
+            for (float i = 0; i > _minX * _xScale; i -= xStep)
+                _graph.DrawString(Math.Round(i / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+            for (float i = 0; i < _maxX * _xScale; i += xStep)
+                _graph.DrawString(Math.Round(i / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+
+
+            for (float i = 0; i > _minY * _yScale; i -= yStep)
+                _graph.DrawString(Math.Round(i / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+            for (float i = 0; i < _maxY * _yScale; i += yStep)
+                _graph.DrawString(Math.Round(i / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+            ////
+
+            pictureBox1.Image = _bitmap;
             pictureBox1.Refresh();
         }
 
@@ -169,7 +193,7 @@ namespace csv_viewer
         {
             try
             {
-               _bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+                _bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
                 _graph = Graphics.FromImage(_bitmap);
 
                 scale();
@@ -211,7 +235,7 @@ namespace csv_viewer
         public void clear()
         {
             _channels.Clear();
-           _graph.Clear(Color.White);
+            _graph.Clear(Color.White);
             pictureBox1.Image = _bitmap;
             Refresh();
         }

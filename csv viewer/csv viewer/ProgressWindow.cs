@@ -12,19 +12,35 @@ namespace csv_viewer
 {
     public partial class ProgressWindow : Form
     {
-        public ProgressWindow(string header, string operation)
+        public Thread ThreadToKill;
+        public ProgressWindow(string header, string operation, Thread threadToKill)
         {
             InitializeComponent();
             Text = header;
             label1.Text = operation;
+            ThreadToKill = threadToKill;
         }
-        public void UpdateProgressBar(int percent)
+        public void UpdateProgressBar(double percent)
         {
             if (percent == 100)
                 Close();
             if (percent >= 0 && percent <= 100)
-                progressBar1.Value = percent;
+            {
+                progressBar1.Value = (int)percent;
+                label2.Text = $"{percent}%";
+            }
             Refresh();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            ThreadToKill.Abort();
+            Close();
+        }
+
+        private void ProgressWindow_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            ThreadToKill.Abort();
         }
     }
 }

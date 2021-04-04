@@ -15,6 +15,10 @@ namespace csv_viewer
     public partial class Form1 : Form
     {
         Thread _background = null;
+        enum decimalCeparatorMode {sign, auto}
+        enum fieldCeparatorMode { sign, auto }
+        decimalCeparatorMode _DecimalSeparatorMode = decimalCeparatorMode.auto;
+        fieldCeparatorMode _FieldCeparatorMode = fieldCeparatorMode.auto;
         string _fieldSeparator = "\t";
         string _decimalSeparator = ".";
         public Form1()
@@ -22,70 +26,7 @@ namespace csv_viewer
             InitializeComponent();
             graph2.BackColorLegend = Color.FromArgb(125, Color.Yellow);
         }
-        /// <summary>
-        /// Kill opening or file generation process
-        /// </summary>
-        internal void KillBackground()
-        {
-            if(_background!=null && _background.IsAlive)
-                _background.Abort();
-            _background = null;
-        }
         
-        public void callbackNames(List<string> names)
-        {
-            //if (listBox1.InvokeRequired)
-            //{
-            //    BeginInvoke((MethodInvoker)delegate () { callbackNames(names); });
-            //}
-            //else
-            //{
-            //    lock (graph2)
-            //    {
-            //        int selectedIndex = 0;
-            //        graph2.setChannelsNames(names);
-            //        graph2.Drawable.Clear();
-            //        foreach (var i in names)
-            //        {
-            //            listBox1.Items.Add(i);
-            //            if (selectedIndex < 5)
-            //                graph2.Drawable.Add(selectedIndex++);
-            //        }
-            //    }
-            //}
-        }
-        public void callbackValues(List<List<PointF>> values)
-        {
-            //if (listBox1.InvokeRequired)
-            //{
-            //    BeginInvoke((MethodInvoker)delegate () { callbackValues(values); });
-            //}
-            //else
-            //{
-            //    lock (graph2)
-            //    {
-            //        graph2.setChannelsValues(values);
-            //    }
-            //}
-        }
-        public void callbackCancel(string filename)
-        {
-            //if (listBox1.InvokeRequired)
-            //{
-            //    BeginInvoke((MethodInvoker)delegate () { callbackCancel(filename); });
-            //}
-            //else
-            //{
-            //    listBox1.SelectedIndexChanged -= listBox1_SelectedIndexChanged;
-            //        statusStrip1.Items[0].Text = "Completed successfully";
-            //    this.Text = $"CSV Viewer - {filename}";
-            //    button2.Enabled = true;
-            //        foreach (var i in graph2.Drawable)
-            //            listBox1.SelectedIndices.Add(i);
-            //    listBox1.SelectedIndexChanged += listBox1_SelectedIndexChanged;
-            //}
-        }
-
         private void button1_Click(object sender, EventArgs e)
         {
             graph2.clear();
@@ -94,42 +35,139 @@ namespace csv_viewer
             if (file.ShowDialog() == DialogResult.OK)
             {
                 statusStrip1.Items[0].Text = $"Opening CSV file: '{file.FileName}'";
-                ProgressWindow PW = new ProgressWindow("In progress", $"Opening{file.FileName}");
-                new Thread(new ThreadStart((MethodInvoker)delegate () { Application.Run(PW); })).Start();
-                new Task(() => OpenFileBackground(file.FileName)).Start();
+                _background = new Thread(new ThreadStart(() => OpenFileBackground(file.FileName)));
+                _background.Start();
+                //new Task(() => OpenFileBackground(file.FileName)).Start();
                 //_background();
             }
         }
         void OpenFileBackground(string filename)
         {
-            long maximum = new FileInfo(filename).Length;
-            long current = 0;
+            ProgressWindow progressWindow = new ProgressWindow("In progress", $"Opening{filename}", _background);
+            Task r = Task.Run(delegate () { Application.Run(progressWindow); });
+            //new Thread(new ThreadStart((MethodInvoker)delegate () { Application.Run(progressWindow); })).Start();
+            //progressWindow.Show();
+           // r.Wait();
+            double fileSize = new FileInfo(filename).Length;
+            double current = 0;
+            double previousPercentForRefreshGraph = 0;
+            double prevPercentForCallback = 0 ;
+            double percent = 0;
+            if (_FieldCeparatorMode == fieldCeparatorMode.auto)
+            {
+                //predicting field separator
+                using (StreamReader reader = new StreamReader(filename))
+                {
+                    string line = reader.ReadLine();
+                    if (line.Contains("\t"))
+                        _fieldSeparator = "\t";
+                    else if (line.Contains(";"))
+                        _fieldSeparator = ";";
+                    else
+                        _fieldSeparator = ",";
+                }
+            }
+            if (_DecimalSeparatorMode == decimalCeparatorMode.auto)
+            {
+                //predicting decimal separator
+                using (StreamReader reader = new StreamReader(filename))
+                {
+                    if(_fieldSeparator == ",")
+                        _decimalSeparator = ".";
+                    else
+                    {
+                        //first line
+                        reader.ReadLine();
+
+                        string line = reader.ReadLine();
+                        while (!line.Contains(".") && !line.Contains(","))
+                            line = reader.ReadLine();
+                        if (line.Contains("."))
+                            _decimalSeparator = ".";
+                        else if(line.Contains(","))
+                            _decimalSeparator = ",";
+                    }
+
+                   
+                }
+            }
+
             using (StreamReader reader = new StreamReader(filename))
             {
                 //Get Names
                 string line = reader.ReadLine();
                 string[] row = line.Split(new string[] { _fieldSeparator }, StringSplitOptions.RemoveEmptyEntries);
+                float[] floatRow;
                 current = line.Length;
-                for (int i = 0; i < row.Length - 1; i++)
-                    graph2.addChannel(row[i + 1]);
+                int channelCount = row.Length;
+                floatRow = new float[channelCount];
+                listBox1.Invoke((MethodInvoker)delegate ()
+                {
+                    listBox1.SelectedIndexChanged -= listBox1_SelectedIndexChanged;
+                    listBox1.Items.Clear();
+
+                    for (int i = 0; i < row.Length; i++)
+                    {
+                        graph2.addChannel(row[i]);
+                        listBox1.Items.Add(row[i]);
+                        if (i < 5)
+                        {       
+                            listBox1.SelectedIndices.Add(i);
+                        }
+                    }
+                    listBox1.SelectedIndexChanged += listBox1_SelectedIndexChanged;
+                });
                 //get values async
                 while (!reader.EndOfStream)
                 {
-                    row = reader.ReadLine().Split(new string[] { _fieldSeparator }, StringSplitOptions.RemoveEmptyEntries);
-                    for (int i = 1; i < row.Length; i++)
+                    line = reader.ReadLine();
+                    if(Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator!= _decimalSeparator)
+                        line= line.Replace(_decimalSeparator, Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator);
+                    row = line.Split(new string[] { _fieldSeparator }, StringSplitOptions.None);
+                    if (row.Length == channelCount)
                     {
-                        try
+                        for (int i = 0; i < channelCount; i++)
                         {
-                            graph2.insertInto(i-1, new PointF(Convert.ToSingle(row[0]), Convert.ToSingle(row[i])));
+                            if (!float.TryParse(row[i], out floatRow[i]))
+                                floatRow[i] = float.NaN;
                         }
-                        catch (Exception ex)
+                        if (!float.IsNaN(floatRow[0]))
                         {
-                            graph2.insertInto(i - 1, new PointF(0, 0));
+                            for (int i = 0; i < channelCount; i++)
+                            {
+                                graph2.insertInto(i, new PointF(floatRow[0], floatRow[i]));
+                            }
                         }
+
                     }
-                    graph2.draw();
+                    current += line.Length;
+                    percent = Math.Round(current / fileSize * 100, 1);
+                    if (percent != prevPercentForCallback)
+                    {
+
+                        progressWindow.BeginInvoke((MethodInvoker)delegate ()
+                        {
+                            if (progressWindow.IsHandleCreated)
+                                progressWindow.UpdateProgressBar(percent);
+                        });
+                        if (percent - previousPercentForRefreshGraph > 5)
+                        {
+                            graph2.BeginInvoke((MethodInvoker)delegate ()
+                            {
+                                if (graph2.IsHandleCreated)
+                                    graph2.draw();
+                            });
+                            previousPercentForRefreshGraph = percent;
+                        }
+                        prevPercentForCallback = percent;
+                    }
+
                 }
             }
+            progressWindow.BeginInvoke((MethodInvoker)delegate () {
+                if (progressWindow.IsHandleCreated)
+                    progressWindow.UpdateProgressBar(100);
+            });
         }
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -157,17 +195,6 @@ namespace csv_viewer
         }
         Delegate generator;
 
-        private void AnyFieldSep_CheckedChanged(object sender, EventArgs e)
-        {
-            RadioButton[] FieldSep = groupBox7.Controls.OfType<RadioButton>().ToArray();
-          /*  for(int  i=0;i<FieldSep.Length;i++)
-                generator = (MethodInvoker)delegate () { FileGenerator(, ""); };*/
-        }
-        private void AnyDecSep_CheckedChanged(object sender, EventArgs e)
-        {
-          /*  var target = groupBox5.Controls.OfType<RadioButton>().Where(x => x.Checked).First();
-            generator = (MethodInvoker)delegate () { FileGenerator(, ""); };*/
-        }
         void FileGenerator(string separatorField, List<List<string>> values, string filename)
         {
             //ProgressWindow pg = new ProgressWindow();
@@ -191,6 +218,41 @@ namespace csv_viewer
          //   nfi.NumberDecimalSeparator = separatorDecimal;
             double hui = 99.99;
             string a = hui.ToString(nfi);*/
+        }
+
+        private void sepTab_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void sepSemi_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void sepComma_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void sepAuto_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fieldDot_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fieldComma_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void fieldAuto_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

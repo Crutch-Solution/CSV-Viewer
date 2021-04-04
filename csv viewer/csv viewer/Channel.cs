@@ -19,25 +19,33 @@ namespace csv_viewer
         public Channel(String name, Pen pen) { Name = name; this.pen = pen; }
         public void add(PointF val)
         {
-            values.Add(val);
-            recalculateStatistics();
+            lock (values)
+            {
+                values.Add(val);
+            }
         }
 
         public void recalculateStatistics()
         {
-            Avg = values.Average(x => x.Y);
-            MinX = values.Min(x => x.X);
-            MaxX = values.Max(x => x.X);
-            MinY = values.Min(x => x.Y);
-            MaxY = values.Max(x => x.Y);
-            Count = values.Count;
-            NaNs = values.Count(x => double.IsNaN(x.Y));
+            lock (values)
+            {
+                Avg = values.Average(x => x.Y);
+                MinX = values.Min(x => x.X);
+                MaxX = values.Max(x => x.X);
+                MinY = values.Min(x => x.Y);
+                MaxY = values.Max(x => x.Y);
+                Count = values.Count;
+                NaNs = values.Count(x => double.IsNaN(x.Y));
+            }
         }
         public void scale(float X, float Y)
         {
-            scaled = new List<PointF>();
-            foreach (var i in values)
-                scaled.Add(new PointF(i.X * X, i.Y * Y));
+            lock (values)
+            {
+                scaled = new List<PointF>();
+                foreach (var i in values)
+                    scaled.Add(new PointF(i.X * X, i.Y * Y));
+            }
         }
         public void draw(ref Graphics graph)
         {
