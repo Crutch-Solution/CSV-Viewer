@@ -37,13 +37,14 @@ namespace csv_viewer
                 statusStrip1.Items[0].Text = $"Opening CSV file: '{file.FileName}'";
                 _background = new Thread(new ThreadStart(() => OpenFileBackground(file.FileName)));
                 _background.Start();
+                button2.Enabled = true;
                 //new Task(() => OpenFileBackground(file.FileName)).Start();
                 //_background();
             }
         }
         void OpenFileBackground(string filename)
         {
-            ProgressWindow progressWindow = new ProgressWindow("In progress", $"Opening{filename}", _background);
+            ProgressWindow progressWindow = new ProgressWindow("In progress", $"Opening{filename}", _background, statusStrip1);
             Task r = Task.Run(delegate () { Application.Run(progressWindow); });
             //new Thread(new ThreadStart((MethodInvoker)delegate () { Application.Run(progressWindow); })).Start();
             //progressWindow.Show();
@@ -154,8 +155,12 @@ namespace csv_viewer
                         {
                             graph2.BeginInvoke((MethodInvoker)delegate ()
                             {
-                                if (graph2.IsHandleCreated)
-                                    graph2.draw();
+                                try
+                                {
+                                    if (graph2.IsHandleCreated)
+                                        graph2.draw();
+                                }
+                                catch (Exception ex) { }
                             });
                             previousPercentForRefreshGraph = percent;
                         }
@@ -168,6 +173,11 @@ namespace csv_viewer
                 if (progressWindow.IsHandleCreated)
                     progressWindow.UpdateProgressBar(100);
             });
+            statisticBox.BeginInvoke((MethodInvoker)delegate ()
+            {
+                statisticBox.Text = "";
+                statisticBox.Lines = graph2.GetStatistic().ToArray();
+            });
         }
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -176,8 +186,14 @@ namespace csv_viewer
             {
                 graph2.Drawable.Add(Convert.ToInt32(i));
             }
-            graph2.scale();
-            graph2.draw();
+            try
+            {
+                graph2.scale();
+                graph2.draw();
+                statisticBox.Text = "";
+                statisticBox.Lines = graph2.GetStatistic().ToArray();
+            }
+            catch (Exception ex) { }
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -191,68 +207,102 @@ namespace csv_viewer
 
         private void button3_Click(object sender, EventArgs e)
         {
+            
 
         }
-        Delegate generator;
 
-        void FileGenerator(string separatorField, List<List<string>> values, string filename)
+
+        void FileGenerator(string filename, int channelCount, int rowCount)
         {
-            //ProgressWindow pg = new ProgressWindow();
-            /*pg.Show();
-            if (File.Exists(filename))
-                File.Delete(filename);
-            File.Create(filename).Close();
-            using (StreamWriter writer = new StreamWriter(filename))
+            //file generator
+            List<Generator> generators = new List<Generator>();
+            Random random = new Random();
+            List<List<double>> values = new List<List<double>>();
+            
+            for (int i = 0; i < channelCount; i++)
             {
-                string line="";
-                for (int i = 0; i < values[0].Count;i++)
+                int classType = random.Next(0, 3);
+                switch (classType)
                 {
-                    line = "";
-                    for (int j = 0; j < values.Count-1;j++)
-                        line += values[j][i] + "\t";
-                    line += values[values.Count - 1][i];
+                    case 0:
+                        generators.Add(new Sin());
+                        break;
+                    case 1:
+                        generators.Add(new Cos());
+                        break;
+                    case 2:
+                        generators.Add(new Saw());
+                        break;
                 }
-                writer.WriteLine(line);
             }
-         //       System.Globalization.NumberFormatInfo nfi = new System.Globalization.NumberFormatInfo();
-         //   nfi.NumberDecimalSeparator = separatorDecimal;
-            double hui = 99.99;
-            string a = hui.ToString(nfi);*/
+
         }
 
         private void sepTab_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (sepTab.Checked)
+            {
+                _fieldSeparator = "\t";
+                _FieldCeparatorMode = fieldCeparatorMode.sign;
+            }
         }
 
         private void sepSemi_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (sepSemi.Checked)
+            {
+                _fieldSeparator = ";";
+                _FieldCeparatorMode = fieldCeparatorMode.sign;
+            }
         }
 
         private void sepComma_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (sepComma.Checked)
+            {
+                _fieldSeparator = ",";
+                _FieldCeparatorMode = fieldCeparatorMode.sign;
+                if (deciComma.Checked)
+                    deciAuto.Checked = true;
+            }
         }
 
         private void sepAuto_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (sepAuto.Checked)
+            {
+                _FieldCeparatorMode = fieldCeparatorMode.auto;
+                _fieldSeparator = "\t";
+            }
         }
 
-        private void fieldDot_CheckedChanged(object sender, EventArgs e)
+        private void deciDot_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (deciDot.Checked)
+            {
+                _decimalSeparator = ".";
+                _DecimalSeparatorMode = decimalCeparatorMode.sign;
+            }
         }
 
-        private void fieldComma_CheckedChanged(object sender, EventArgs e)
+        private void deciComma_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (deciComma.Checked)
+            {
+                _decimalSeparator = ",";
+                _DecimalSeparatorMode = decimalCeparatorMode.sign;
+                if (sepComma.Checked)
+                    sepAuto.Checked = true;
+            }
         }
 
-        private void fieldAuto_CheckedChanged(object sender, EventArgs e)
+        private void deciAuto_CheckedChanged(object sender, EventArgs e)
         {
-
+            if (deciAuto.Checked)
+            {
+                _DecimalSeparatorMode = decimalCeparatorMode.auto;
+                _decimalSeparator = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
+            }
         }
     }
 }

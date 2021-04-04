@@ -39,16 +39,15 @@
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
-            this.graph2 = new csv_viewer.Graph();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.statisticBox = new System.Windows.Forms.TextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel4 = new System.Windows.Forms.TableLayoutPanel();
             this.groupBox5 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel6 = new System.Windows.Forms.TableLayoutPanel();
-            this.fieldDot = new System.Windows.Forms.RadioButton();
-            this.fieldAuto = new System.Windows.Forms.RadioButton();
-            this.fieldComma = new System.Windows.Forms.RadioButton();
+            this.deciDot = new System.Windows.Forms.RadioButton();
+            this.deciAuto = new System.Windows.Forms.RadioButton();
+            this.deciComma = new System.Windows.Forms.RadioButton();
             this.groupBox7 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel5 = new System.Windows.Forms.TableLayoutPanel();
             this.sepAuto = new System.Windows.Forms.RadioButton();
@@ -66,6 +65,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
+            this.graph2 = new csv_viewer.Graph();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -225,17 +225,9 @@
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Graphs";
             // 
-            // graph2
-            // 
-            this.graph2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.graph2.Location = new System.Drawing.Point(3, 18);
-            this.graph2.Name = "graph2";
-            this.graph2.Size = new System.Drawing.Size(795, 372);
-            this.graph2.TabIndex = 0;
-            // 
             // groupBox9
             // 
-            this.groupBox9.Controls.Add(this.textBox3);
+            this.groupBox9.Controls.Add(this.statisticBox);
             this.groupBox9.Dock = System.Windows.Forms.DockStyle.Fill;
             this.groupBox9.Location = new System.Drawing.Point(0, 0);
             this.groupBox9.Name = "groupBox9";
@@ -244,15 +236,15 @@
             this.groupBox9.TabStop = false;
             this.groupBox9.Text = "Statistics";
             // 
-            // textBox3
+            // statisticBox
             // 
-            this.textBox3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.textBox3.Location = new System.Drawing.Point(3, 18);
-            this.textBox3.Multiline = true;
-            this.textBox3.Name = "textBox3";
-            this.textBox3.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox3.Size = new System.Drawing.Size(795, 129);
-            this.textBox3.TabIndex = 0;
+            this.statisticBox.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.statisticBox.Location = new System.Drawing.Point(3, 18);
+            this.statisticBox.Multiline = true;
+            this.statisticBox.Name = "statisticBox";
+            this.statisticBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.statisticBox.Size = new System.Drawing.Size(795, 129);
+            this.statisticBox.TabIndex = 0;
             // 
             // groupBox4
             // 
@@ -297,9 +289,9 @@
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 31.13553F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 41.75824F));
             this.tableLayoutPanel6.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 26.73993F));
-            this.tableLayoutPanel6.Controls.Add(this.fieldDot, 0, 0);
-            this.tableLayoutPanel6.Controls.Add(this.fieldAuto, 2, 0);
-            this.tableLayoutPanel6.Controls.Add(this.fieldComma, 1, 0);
+            this.tableLayoutPanel6.Controls.Add(this.deciDot, 0, 0);
+            this.tableLayoutPanel6.Controls.Add(this.deciAuto, 2, 0);
+            this.tableLayoutPanel6.Controls.Add(this.deciComma, 1, 0);
             this.tableLayoutPanel6.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel6.Location = new System.Drawing.Point(3, 18);
             this.tableLayoutPanel6.Name = "tableLayoutPanel6";
@@ -308,43 +300,43 @@
             this.tableLayoutPanel6.Size = new System.Drawing.Size(276, 60);
             this.tableLayoutPanel6.TabIndex = 3;
             // 
-            // fieldDot
+            // deciDot
             // 
-            this.fieldDot.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.fieldDot.AutoSize = true;
-            this.fieldDot.Location = new System.Drawing.Point(3, 19);
-            this.fieldDot.Name = "fieldDot";
-            this.fieldDot.Size = new System.Drawing.Size(69, 21);
-            this.fieldDot.TabIndex = 0;
-            this.fieldDot.Text = "Dot (.)";
-            this.fieldDot.UseVisualStyleBackColor = true;
-            this.fieldDot.CheckedChanged += new System.EventHandler(this.fieldDot_CheckedChanged);
+            this.deciDot.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.deciDot.AutoSize = true;
+            this.deciDot.Location = new System.Drawing.Point(3, 19);
+            this.deciDot.Name = "deciDot";
+            this.deciDot.Size = new System.Drawing.Size(69, 21);
+            this.deciDot.TabIndex = 0;
+            this.deciDot.Text = "Dot (.)";
+            this.deciDot.UseVisualStyleBackColor = true;
+            this.deciDot.CheckedChanged += new System.EventHandler(this.deciDot_CheckedChanged);
             // 
-            // fieldAuto
+            // deciAuto
             // 
-            this.fieldAuto.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.fieldAuto.AutoSize = true;
-            this.fieldAuto.Checked = true;
-            this.fieldAuto.Location = new System.Drawing.Point(204, 19);
-            this.fieldAuto.Name = "fieldAuto";
-            this.fieldAuto.Size = new System.Drawing.Size(58, 21);
-            this.fieldAuto.TabIndex = 2;
-            this.fieldAuto.TabStop = true;
-            this.fieldAuto.Text = "Auto";
-            this.fieldAuto.UseVisualStyleBackColor = true;
-            this.fieldAuto.CheckedChanged += new System.EventHandler(this.fieldAuto_CheckedChanged);
+            this.deciAuto.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.deciAuto.AutoSize = true;
+            this.deciAuto.Checked = true;
+            this.deciAuto.Location = new System.Drawing.Point(204, 19);
+            this.deciAuto.Name = "deciAuto";
+            this.deciAuto.Size = new System.Drawing.Size(58, 21);
+            this.deciAuto.TabIndex = 2;
+            this.deciAuto.TabStop = true;
+            this.deciAuto.Text = "Auto";
+            this.deciAuto.UseVisualStyleBackColor = true;
+            this.deciAuto.CheckedChanged += new System.EventHandler(this.deciAuto_CheckedChanged);
             // 
-            // fieldComma
+            // deciComma
             // 
-            this.fieldComma.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.fieldComma.AutoSize = true;
-            this.fieldComma.Location = new System.Drawing.Point(89, 19);
-            this.fieldComma.Name = "fieldComma";
-            this.fieldComma.Size = new System.Drawing.Size(94, 21);
-            this.fieldComma.TabIndex = 1;
-            this.fieldComma.Text = "Comma (,)";
-            this.fieldComma.UseVisualStyleBackColor = true;
-            this.fieldComma.CheckedChanged += new System.EventHandler(this.fieldComma_CheckedChanged);
+            this.deciComma.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.deciComma.AutoSize = true;
+            this.deciComma.Location = new System.Drawing.Point(89, 19);
+            this.deciComma.Name = "deciComma";
+            this.deciComma.Size = new System.Drawing.Size(94, 21);
+            this.deciComma.TabIndex = 1;
+            this.deciComma.Text = "Comma (,)";
+            this.deciComma.UseVisualStyleBackColor = true;
+            this.deciComma.CheckedChanged += new System.EventHandler(this.deciComma_CheckedChanged);
             // 
             // groupBox7
             // 
@@ -539,6 +531,14 @@
             // 
             this.errorProvider1.ContainerControl = this;
             // 
+            // graph2
+            // 
+            this.graph2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.graph2.Location = new System.Drawing.Point(3, 18);
+            this.graph2.Name = "graph2";
+            this.graph2.Size = new System.Drawing.Size(795, 372);
+            this.graph2.TabIndex = 0;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -605,10 +605,10 @@
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.GroupBox groupBox8;
         private System.Windows.Forms.GroupBox groupBox9;
-        private System.Windows.Forms.TextBox textBox3;
-        private System.Windows.Forms.RadioButton fieldAuto;
-        private System.Windows.Forms.RadioButton fieldComma;
-        private System.Windows.Forms.RadioButton fieldDot;
+        private System.Windows.Forms.TextBox statisticBox;
+        private System.Windows.Forms.RadioButton deciAuto;
+        private System.Windows.Forms.RadioButton deciComma;
+        private System.Windows.Forms.RadioButton deciDot;
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Button button2;

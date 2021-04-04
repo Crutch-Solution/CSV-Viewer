@@ -13,10 +13,10 @@ namespace csv_viewer
         List<PointF> scaled = new List<PointF>();
 
         public string Name;
-        public int Count, NaNs;
+        public int Count, NaNs, Valid;
         public float Avg, MinX, MaxX, MinY, MaxY;
-        public Pen pen;
-        public Channel(String name, Pen pen) { Name = name; this.pen = pen; }
+        public Channel(String name) { Name = name; }
+        
         public void add(PointF val)
         {
             lock (values)
@@ -29,13 +29,15 @@ namespace csv_viewer
         {
             lock (values)
             {
+                var clearList = values.FindAll(x => !float.IsNaN(x.Y));
                 Avg = values.Average(x => x.Y);
-                MinX = values.Min(x => x.X);
-                MaxX = values.Max(x => x.X);
-                MinY = values.Min(x => x.Y);
-                MaxY = values.Max(x => x.Y);
+                MinX = clearList.Min(x => x.X);
+                MaxX = clearList.Max(x => x.X);
+                MinY = clearList.Min(x => x.Y);
+                MaxY = clearList.Max(x => x.Y);
                 Count = values.Count;
-                NaNs = values.Count(x => double.IsNaN(x.Y));
+                NaNs = Count - clearList.Count;
+                Valid = clearList.Count;
             }
         }
         public void scale(float X, float Y)
@@ -47,11 +49,26 @@ namespace csv_viewer
                     scaled.Add(new PointF(i.X * X, i.Y * Y));
             }
         }
-        public void draw(ref Graphics graph)
+        public void draw(ref Graphics graph, Pen pen)
         {
             if (values.Count > 1)
-                graph.DrawLines(pen, scaled.ToArray());
+            {
+                if (NaNs == 0)
+                {
+                    graph.DrawLines(pen, scaled.ToArray());
+                }
+                else
+                {
+                    for(int i=0;i< scaled.Count-1; i++)
+                        if(!float.IsNaN(scaled[i].Y) && !float.IsNaN(scaled[i+1].Y))
+                            graph.DrawLine(pen, scaled[i], scaled[i+1]);
+                }
+              
+            }
         }
-
+        public string GetStatistic()
+        {
+            return $"Channel: {Name}. Count = {Count} (NaNs = {NaNs}, Valid={Valid}); Avg = {Math.Round(Avg, 3)}; Range = [{Math.Round(MinY, 3)}...{Math.Round(MaxY, 3)}]";
+        }
     }
 }

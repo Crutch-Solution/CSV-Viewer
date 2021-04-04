@@ -12,13 +12,15 @@ namespace csv_viewer
 {
     public partial class ProgressWindow : Form
     {
-        public Thread ThreadToKill;
-        public ProgressWindow(string header, string operation, Thread threadToKill)
+        Thread _threadToKill;
+        StatusStrip _statusStrip;
+        public ProgressWindow(string header, string operation, Thread threadToKill, StatusStrip statusStrip)
         {
             InitializeComponent();
             Text = header;
             label1.Text = operation;
-            ThreadToKill = threadToKill;
+            _threadToKill = threadToKill;
+            _statusStrip = statusStrip;
         }
         public void UpdateProgressBar(double percent)
         {
@@ -29,18 +31,20 @@ namespace csv_viewer
                 progressBar1.Value = (int)percent;
                 label2.Text = $"{percent}%";
             }
+            _statusStrip.Invoke((MethodInvoker)delegate () { _statusStrip.Items[0].Text = "Completed successfully"; });
             Refresh();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            ThreadToKill.Abort();
+            _threadToKill.Abort();
+            _statusStrip.Invoke((MethodInvoker)delegate () { _statusStrip.Items[0].Text = "Interrupted"; });
             Close();
         }
 
         private void ProgressWindow_FormClosing(object sender, FormClosingEventArgs e)
         {
-            ThreadToKill.Abort();
+            _threadToKill.Abort();
         }
     }
 }

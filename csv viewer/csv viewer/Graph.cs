@@ -38,7 +38,7 @@ namespace csv_viewer
         float _minY;
         float _xScale = 1;
         float _yScale = 1;
-
+        
         public Graph()
         {
             InitializeComponent();
@@ -53,11 +53,18 @@ namespace csv_viewer
                 _legendPens[i] = new Pen(_legendColors[i]);
             }
         }
+        public List<string> GetStatistic()
+        {
+            List<string> result = new List<string>();
+            foreach (var i in Drawable)
+                result.Add(_channels[i].GetStatistic());
+            return result;
+        }
         public void addChannel(String name)
         {
             if (Drawable.Count < 5)
                 Drawable.Add(_channels.Count);
-            _channels.Add(new Channel(name, _legendPens[_channels.Count%_colorsCount]));
+            _channels.Add(new Channel(name));
 
         }
         public int getChannelIndex(string channelName)
@@ -108,10 +115,8 @@ namespace csv_viewer
             _graph.TranslateTransform(0, -_bitmap.Height);
             _graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
 
-            foreach (var i in Drawable)
-            {
-                _channels[i].draw(ref _graph);
-            }
+            for(int i = 0; i < Drawable.Count; i++)
+                _channels[Drawable[i]].draw(ref _graph, _legendPens[i%_colorsCount]);
             pictureBox1.Image = _bitmap;
             // pictureBox1.Refresh();
         }
@@ -139,11 +144,8 @@ namespace csv_viewer
                     Y =_graph.MeasureString(_channels[i].Name, new Font("Arial", 12)).Height;
             }
            _graph.FillRectangle(new SolidBrush(BackColorLegend), 20, 20, X, Y * Drawable.Count);
-            int index = 0;
-            foreach(var i in Drawable)
-            {
-               _graph.DrawString(_channels[i].Name, new Font("Arial", 12), _legendBrushes[i % _colorsCount], 20, 20 + 20 * index++);
-            }
+            for(int i=0;i<Drawable.Count;i++)
+               _graph.DrawString(_channels[Drawable[i]].Name, new Font("Arial", 12), _legendBrushes[i % _colorsCount], 20, 20 + 20 * i);
             pictureBox1.Image =_bitmap;
             pictureBox1.Refresh();
         }
