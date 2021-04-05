@@ -15,9 +15,19 @@ namespace csv_viewer
 {
     public partial class Form1 : Form
     {
+        /// <summary>
+        /// Background operation (open / generate)
+        /// </summary>
         Thread _background = new Thread(new ThreadStart(()=> { }));
+        /// <summary>
+        /// current decimal delimeter mode
+        /// </summary>
         enum decimalCeparatorMode {sign, auto}
+        /// <summary>
+        /// current field delimeter mode
+        /// </summary>
         enum fieldCeparatorMode { sign, auto }
+        //default values
         decimalCeparatorMode _DecimalSeparatorMode = decimalCeparatorMode.auto;
         fieldCeparatorMode _FieldCeparatorMode = fieldCeparatorMode.auto;
         string _fieldSeparator = "\t";
@@ -27,13 +37,17 @@ namespace csv_viewer
             InitializeComponent();
             graph2.BackColorLegend = Color.FromArgb(125, Color.Yellow);
         }
-        
+        /// <summary>
+        /// open file button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
-
             graph2.clear();
             statusStrip1.Items[0].Text = "Opening CSV file";
             OpenFileDialog file = new OpenFileDialog();
+           file.Filter = "CSV files (*.csv, *.txt) | *.csv; *.txt";
             if (file.ShowDialog() == DialogResult.OK)
             {
                 statusStrip1.Items[0].Text = $"Opening CSV file: '{file.FileName}'";
@@ -44,6 +58,10 @@ namespace csv_viewer
                 button1.Enabled = false;
             }
         }
+        /// <summary>
+        /// background 'open file' thread (callbacks inside)
+        /// </summary>
+        /// <param name="filename"></param>
         void OpenFileBackground(string filename)
         {
             ProgressWindow progressWindow = new ProgressWindow("In progress", $"Opening{filename}", _background, statusStrip1);
@@ -121,8 +139,8 @@ namespace csv_viewer
                 while (!reader.EndOfStream)
                 {
                     line = reader.ReadLine();
-                    if(Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator!= _decimalSeparator)
-                        line= line.Replace(_decimalSeparator, Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator);
+                    if (Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator != _decimalSeparator)
+                        line = line.Replace(_decimalSeparator, Thread.CurrentThread.CurrentCulture.NumberFormat.CurrencyDecimalSeparator);
                     row = line.Split(new string[] { _fieldSeparator }, StringSplitOptions.None);
                     if (row.Length == channelCount)
                     {
@@ -145,7 +163,8 @@ namespace csv_viewer
                     if (percent != prevPercentForCallback)
                     {
                         prevPercentForCallback = percent;
-                        progressWindow.BeginInvoke((MethodInvoker)delegate ()
+                        if (progressWindow.IsHandleCreated)
+                            progressWindow.BeginInvoke((MethodInvoker)delegate ()
                         {
                             if (progressWindow.IsHandleCreated)
                                 progressWindow.UpdateProgressBar(percent);
@@ -174,7 +193,8 @@ namespace csv_viewer
 
                 }
             }
-            graph2.BeginInvoke((MethodInvoker)delegate ()
+            if (graph2.IsHandleCreated)
+                graph2.BeginInvoke((MethodInvoker)delegate ()
             {
                 try
                 {
@@ -187,14 +207,20 @@ namespace csv_viewer
             {
                 statisticBox.Text = "";
                 statisticBox.Lines = graph2.GetStatistic().ToArray();
-
+                statisticBox.Refresh();
             });
-            progressWindow.BeginInvoke((MethodInvoker)delegate () {
+            if (progressWindow.IsHandleCreated)
+                progressWindow.BeginInvoke((MethodInvoker)delegate () {
                 if (progressWindow.IsHandleCreated)
                     progressWindow.UpdateProgressBar(100);
             });
 
         }
+        /// <summary>
+        /// selected channels indexes changed, calls update Drawable, rescale and draw
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             graph2.Drawable.Clear();
@@ -211,7 +237,11 @@ namespace csv_viewer
             }
             catch (Exception ex) { }
         }
-
+        /// <summary>
+        /// close current channels button
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button2_Click(object sender, EventArgs e)
         {
             if (graph2.DrawThread.IsAlive)
@@ -225,27 +255,39 @@ namespace csv_viewer
             button2.Enabled = false;
             button1.Enabled = true;
         }
-
+        /// <summary>
+        /// generate file
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void button3_Click(object sender, EventArgs e)
         {
             SaveFileDialog file = new SaveFileDialog();
-            if(file.ShowDialog() == DialogResult.OK)
+            file.Filter = "CSV files (*.csv, *.txt) | *.csv; *.txt";
+            if (file.ShowDialog() == DialogResult.OK)
             {
-                if(checkBox1.Checked)
+                if (checkBox1.Checked)
                     _background = new Thread(new ThreadStart(() => GenerateFileBackground(file.FileName, Convert.ToInt32(channelCount.Text), Convert.ToInt32(rowCount.Text), 10)));
                 else
                     _background = new Thread(new ThreadStart(() => GenerateFileBackground(file.FileName, Convert.ToInt32(channelCount.Text), Convert.ToInt32(rowCount.Text))));
                 _background.Start();
+                statusStrip1.Items[0].Text = $"Generating CSV file '{file.FileName}'";
             }
         }
 
-
+        /// <summary>
+        /// background 'generate file' thread (callbacks inside)
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="channelCount"></param>
+        /// <param name="rowCount"></param>
+        /// <param name="NaNs"></param>
         void GenerateFileBackground(string filename, int channelCount, int rowCount, int NaNs = -1)
         {
             //file generator
             ProgressWindow progressWindow = new ProgressWindow("In Process", $"Generating CSV File '{filename}'", _background, statusStrip1);
             Task r = Task.Run(delegate () { Application.Run(progressWindow); });
-
+            
             List<Generator> generators = new List<Generator>();
             Random random = new Random();
             List<List<double>> values = new List<List<double>>();
@@ -287,7 +329,8 @@ namespace csv_viewer
                         line.Add( generator.getValue(i).ToString(nfi));
                     }
                     writer.WriteLine(String.Join(_fieldSeparator, line));
-                    progressWindow.BeginInvoke((MethodInvoker)delegate ()
+                    if (progressWindow.IsHandleCreated)
+                        progressWindow.BeginInvoke((MethodInvoker)delegate ()
                     {
                         if (progressWindow.IsHandleCreated)
                             progressWindow.UpdateProgressBar(Math.Round(j / (rowCount * 1.0f)*100, 3));
@@ -295,7 +338,8 @@ namespace csv_viewer
                     
                 }
             }
-            progressWindow.BeginInvoke((MethodInvoker)delegate ()
+            if (progressWindow.IsHandleCreated)
+                progressWindow.BeginInvoke((MethodInvoker)delegate ()
             {
                 if (progressWindow.IsHandleCreated)
                     progressWindow.UpdateProgressBar(100);
@@ -368,10 +412,11 @@ namespace csv_viewer
                 _decimalSeparator = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
             }
         }
-        void validateForGeneration()
-        {
-
-        }
+        /// <summary>
+        /// validating generation parameters
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void channelCount_KeyUp(object sender, KeyEventArgs e)
         {
             int val = 0;

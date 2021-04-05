@@ -44,7 +44,7 @@ namespace csv_viewer
             if (NaNs == Count)
                 return;
             scaled = new List<PointF>();
-            for (int i = 0; i < limit; i++)
+            for (int i = 0; i < limit && i< values.Count; i++)
             {
                 if (float.IsNaN(values[i].Y))
                     scaled.Add(new PointF(values[i].X * X, float.NaN));

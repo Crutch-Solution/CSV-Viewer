@@ -14,6 +14,13 @@ namespace csv_viewer
     {
         Thread _threadToKill;
         StatusStrip _statusStrip;
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="header">Window header</param>
+        /// <param name="operation">Opeartion desription</param>
+        /// <param name="threadToKill">Thread to be killed in case of interruption</param>
+        /// <param name="statusStrip">Status field of a parent window (in case of interruption)</param>
         public ProgressWindow(string header, string operation, Thread threadToKill, StatusStrip statusStrip)
         {
             InitializeComponent();
@@ -22,6 +29,10 @@ namespace csv_viewer
             _threadToKill = threadToKill;
             _statusStrip = statusStrip;
         }
+        /// <summary>
+        /// Replaces current progress bar value and info label on 'percent', please round this input before calling)))
+        /// </summary>
+        /// <param name="percent"></param>
         public void UpdateProgressBar(double percent)
         {
             if (percent == 100)

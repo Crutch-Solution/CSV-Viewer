@@ -16,9 +16,15 @@ namespace csv_viewer
     public partial class Graph : UserControl
     {
         //public fields
-        public delegate void drawGelegate();
-        public drawGelegate _draw;
+        delegate void drawGelegate();
+        /// <summary>
+        /// to draw legend / grid / axes at once
+        /// </summary>
+        drawGelegate _draw;
         public Color BackColorLegend;
+        /// <summary>
+        /// List of channels to be draw
+        /// </summary>
         public List<int> Drawable = new List<int>();
         public int FontSize=8;
 
@@ -28,7 +34,9 @@ namespace csv_viewer
         SolidBrush[] _legendBrushes;
         Pen[] _legendPens;
      
-        
+        /// <summary>
+        /// Main channels list
+        /// </summary>
         List<Channel> _channels = new List<Channel>();
         Bitmap _bitmap;
         Graphics _graph;
@@ -55,10 +63,17 @@ namespace csv_viewer
         }
         public Thread DrawThread = new Thread(new ThreadStart(()=> { }));
         int limit = -1;
+        int _bitmapHeight, _bitmapWidth;
+        /// <summary>
+        /// Draw current channels 
+        /// </summary>
+        /// <param name="force">Kill previous draw task</param>
         public void draw(bool force)
         { 
             if (_channels.Count == 0 || _channels[0].values.Count < 2)
                 return;
+            _bitmapHeight = _bitmap.Height;
+            _bitmapWidth = _bitmap.Width;
             limit = _channels[0].values.Count;
             lock (pictureBox1)
             {
@@ -80,6 +95,10 @@ namespace csv_viewer
                 }
             }
         }
+        /// <summary>
+        /// Returns list of current channels statistic
+        /// </summary>
+        /// <returns></returns>
         public List<string> GetStatistic()
         {
             List<string> result = new List<string>();
@@ -98,15 +117,28 @@ namespace csv_viewer
             _channels.Add(new Channel(name));
 
         }
+        /// <summary>
+        /// Name of the specific channel
+        /// </summary>
+        /// <param name="channelName"></param>
+        /// <returns></returns>
         public int getChannelIndex(string channelName)
         {
             return _channels.FindIndex(x => x.Name == channelName);
         }
+        /// <summary>
+        /// Insert point into specific shannel
+        /// </summary>
+        /// <param name="channelIndex"></param>
+        /// <param name="value"></param>
         public void insertInto(int channelIndex, PointF value)
         {
             _channels[channelIndex].add(value);
         }
         int offsets = 5;
+        /// <summary>
+        /// Calculates current scale values for Graph
+        /// </summary>
         public void scale()
         {
             _maxX = float.MinValue;
@@ -132,8 +164,7 @@ namespace csv_viewer
             foreach (var i in _channels)
                 i.scale(_xScale, _yScale, limit);
         }
-
-        public void drawValues()
+        void drawValues()
         {
             for(int i=0;i<_channels.Count;i++)
                _channels[i].recalculateStatistics(limit);
@@ -143,7 +174,7 @@ namespace csv_viewer
             _graph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
             _graph.ResetTransform();
             _graph.ScaleTransform(1.0f, -1.0f); //flipped;
-            _graph.TranslateTransform(0, -_bitmap.Height);
+            _graph.TranslateTransform(0, -_bitmapHeight);
             _graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
 
             for(int i = 0; i < Drawable.Count; i++)
@@ -154,7 +185,7 @@ namespace csv_viewer
             });
             // pictureBox1.Refresh();
         }
-        public void drawAxes()
+        void drawAxes()
         {
             pictureBox1.Invoke((MethodInvoker)delegate ()
             {
@@ -169,7 +200,7 @@ namespace csv_viewer
                 pictureBox1.Refresh();
             });
         }
-        public void drawLegend()
+        void drawLegend()
         {
             pictureBox1.Invoke((MethodInvoker)delegate ()
             {
@@ -189,7 +220,7 @@ namespace csv_viewer
                 pictureBox1.Refresh();
             });
         }
-        public void drawGrid()
+        void drawGrid()
         {
             pictureBox1.Invoke((MethodInvoker)delegate ()
             {
@@ -277,10 +308,14 @@ namespace csv_viewer
                 _draw -= drawLegend;
             draw(true);
         }
+        /// <summary>
+        /// clear everything
+        /// </summary>
         public void clear()
         {
             _channels.Clear();
             _graph.Clear(Color.White);
+            Drawable.Clear();
             pictureBox1.Image = _bitmap;
             Refresh();
         }
