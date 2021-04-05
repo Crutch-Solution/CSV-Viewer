@@ -53,16 +53,31 @@ namespace csv_viewer
                 _legendPens[i] = new Pen(_legendColors[i]);
             }
         }
-        Thread hui;
-        public void draw()
-        {
+        public Thread DrawThread = new Thread(new ThreadStart(()=> { }));
+        int limit = -1;
+        public void draw(bool force)
+        { 
+            if (_channels.Count == 0 || _channels[0].values.Count < 2)
+                return;
+            limit = _channels[0].values.Count;
             lock (pictureBox1)
             {
-                statusLabel.Text = "Updating, please wait";
-                if (hui != null)
-                    hui.Abort();
-                hui = new Thread(new ThreadStart(_draw));
-                hui.Start();
+                if (force)
+                {
+                    statusLabel.Text = "Updating, please wait";
+                    if (DrawThread != null)
+                        DrawThread.Abort();
+                    DrawThread = new Thread(new ThreadStart(_draw));
+                    DrawThread.Start();
+                }
+                else if (!DrawThread.IsAlive)
+                {
+                    statusLabel.Text = "Updating, please wait";
+                    if (DrawThread != null)
+                        DrawThread.Abort();
+                    DrawThread = new Thread(new ThreadStart(_draw));
+                    DrawThread.Start();
+                }
             }
         }
         public List<string> GetStatistic()
@@ -115,14 +130,13 @@ namespace csv_viewer
 
 
             foreach (var i in _channels)
-                i.scale(_xScale, _yScale);
+                i.scale(_xScale, _yScale, limit);
         }
+
         public void drawValues()
         {
-            if (_channels.Count == 0 || _channels[0].values.Count < 2) return;
-            //Thread.Sleep(50000);
-            foreach (var i in _channels)
-                i.recalculateStatistics();
+            for(int i=0;i<_channels.Count;i++)
+               _channels[i].recalculateStatistics(limit);
             scale();
 
             _graph.Clear(Color.White);
@@ -228,7 +242,7 @@ namespace csv_viewer
                 _graph = Graphics.FromImage(_bitmap);
 
                 scale();
-                draw();
+                draw(true);
 
             }
             catch(Exception ex)
@@ -243,7 +257,7 @@ namespace csv_viewer
                 _draw += drawGrid;
             else
                 _draw -= drawGrid;
-            draw();
+            draw(true);
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
@@ -252,7 +266,7 @@ namespace csv_viewer
                 _draw += drawAxes;
             else
                 _draw -= drawAxes;
-            draw();
+            draw(true);
         }
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
@@ -261,7 +275,7 @@ namespace csv_viewer
                 _draw += drawLegend;
             else
                 _draw -= drawLegend;
-            draw();
+            draw(true);
         }
         public void clear()
         {

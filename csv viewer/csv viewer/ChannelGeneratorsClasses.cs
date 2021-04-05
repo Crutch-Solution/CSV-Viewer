@@ -36,10 +36,10 @@ namespace csv_viewer
             return result;
         }
     }
-    class Saw : Generator
+    class SinCos : Generator
     {
         float _period;
-        public Saw(float period)
+        public SinCos(float period)
         {
             _period = period;
         }

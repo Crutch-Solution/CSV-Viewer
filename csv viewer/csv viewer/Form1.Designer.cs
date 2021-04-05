@@ -39,6 +39,7 @@
             this.groupBox6 = new System.Windows.Forms.GroupBox();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.groupBox8 = new System.Windows.Forms.GroupBox();
+            this.graph2 = new csv_viewer.Graph();
             this.groupBox9 = new System.Windows.Forms.GroupBox();
             this.statisticBox = new System.Windows.Forms.TextBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
@@ -65,7 +66,6 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
-            this.graph2 = new csv_viewer.Graph();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -224,6 +224,14 @@
             this.groupBox8.TabIndex = 0;
             this.groupBox8.TabStop = false;
             this.groupBox8.Text = "Graphs";
+            // 
+            // graph2
+            // 
+            this.graph2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.graph2.Location = new System.Drawing.Point(3, 18);
+            this.graph2.Name = "graph2";
+            this.graph2.Size = new System.Drawing.Size(795, 372);
+            this.graph2.TabIndex = 0;
             // 
             // groupBox9
             // 
@@ -534,14 +542,6 @@
             // 
             this.errorProvider1.ContainerControl = this;
             // 
-            // graph2
-            // 
-            this.graph2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.graph2.Location = new System.Drawing.Point(3, 18);
-            this.graph2.Name = "graph2";
-            this.graph2.Size = new System.Drawing.Size(795, 372);
-            this.graph2.TabIndex = 0;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -551,6 +551,7 @@
             this.Controls.Add(this.statusStrip1);
             this.Name = "Form1";
             this.Text = "CSV Viewer";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Resize += new System.EventHandler(this.Form1_Resize);
             this.groupBox1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);

@@ -15,7 +15,7 @@ namespace csv_viewer
 {
     public partial class Form1 : Form
     {
-        Thread _background = null;
+        Thread _background = new Thread(new ThreadStart(()=> { }));
         enum decimalCeparatorMode {sign, auto}
         enum fieldCeparatorMode { sign, auto }
         decimalCeparatorMode _DecimalSeparatorMode = decimalCeparatorMode.auto;
@@ -30,6 +30,7 @@ namespace csv_viewer
         
         private void button1_Click(object sender, EventArgs e)
         {
+
             graph2.clear();
             statusStrip1.Items[0].Text = "Opening CSV file";
             OpenFileDialog file = new OpenFileDialog();
@@ -40,17 +41,13 @@ namespace csv_viewer
                 _background.Start();
                 button2.Enabled = true;
                 Text = $"Csv Viewer - {file.FileName}";
-                //new Task(() => OpenFileBackground(file.FileName)).Start();
-                //_background();
+                button1.Enabled = false;
             }
         }
         void OpenFileBackground(string filename)
         {
             ProgressWindow progressWindow = new ProgressWindow("In progress", $"Opening{filename}", _background, statusStrip1);
             Task r = Task.Run(delegate () { Application.Run(progressWindow); });
-            //new Thread(new ThreadStart((MethodInvoker)delegate () { Application.Run(progressWindow); })).Start();
-            //progressWindow.Show();
-           // r.Wait();
             double fileSize = new FileInfo(filename).Length;
             double current = 0;
             double previousPercentForRefreshGraph = 0;
@@ -160,7 +157,7 @@ namespace csv_viewer
                                 try
                                 {
                                     if (graph2.IsHandleCreated)
-                                        graph2.draw();
+                                        graph2.draw(false);
                                 }
                                 catch (Exception ex) { }
                             });
@@ -182,7 +179,7 @@ namespace csv_viewer
                 try
                 {
                     if (graph2.IsHandleCreated)
-                        graph2.draw();
+                        graph2.draw(true);
                 }
                 catch (Exception ex) { }
             });
@@ -208,7 +205,7 @@ namespace csv_viewer
             try
             {
                 graph2.scale();
-                graph2.draw();
+                graph2.draw(true);
                 statisticBox.Text = "";
                 statisticBox.Lines = graph2.GetStatistic().ToArray();
             }
@@ -217,12 +214,16 @@ namespace csv_viewer
 
         private void button2_Click(object sender, EventArgs e)
         {
+            if (graph2.DrawThread.IsAlive)
+                graph2.DrawThread.Abort();
+            graph2.statusLabel.Text = "";
             graph2.clear();
             Text = "CSV Viewer";
             statusStrip1.Items[0].Text = "Completed successfully";
             statisticBox.Text = "";
             listBox1.Items.Clear();
             button2.Enabled = false;
+            button1.Enabled = true;
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -242,6 +243,9 @@ namespace csv_viewer
         void GenerateFileBackground(string filename, int channelCount, int rowCount, int NaNs = -1)
         {
             //file generator
+            ProgressWindow progressWindow = new ProgressWindow("In Process", $"Generating CSV File '{filename}'", _background, statusStrip1);
+            Task r = Task.Run(delegate () { Application.Run(progressWindow); });
+
             List<Generator> generators = new List<Generator>();
             Random random = new Random();
             List<List<double>> values = new List<List<double>>();
@@ -255,10 +259,10 @@ namespace csv_viewer
                         generators.Add(new Sin(random.Next(1,100)/(10*1.0f)));
                         break;
                     case 1:
-                        generators.Add(new Sin(random.Next(1, 100) / (10 * 1.0f)));
+                        generators.Add(new Cos(random.Next(1, 100) / (10 * 1.0f)));
                         break;
                     case 2:
-                        generators.Add(new Sin(random.Next(1, 100) / (10 * 1.0f)));
+                        generators.Add(new SinCos(random.Next(1, 100) / (10 * 1.0f)));
                         break;
                 }
             }
@@ -283,9 +287,19 @@ namespace csv_viewer
                         line.Add( generator.getValue(i).ToString(nfi));
                     }
                     writer.WriteLine(String.Join(_fieldSeparator, line));
+                    progressWindow.BeginInvoke((MethodInvoker)delegate ()
+                    {
+                        if (progressWindow.IsHandleCreated)
+                            progressWindow.UpdateProgressBar(Math.Round(j / (rowCount * 1.0f)*100, 3));
+                    });
+                    
                 }
             }
-
+            progressWindow.BeginInvoke((MethodInvoker)delegate ()
+            {
+                if (progressWindow.IsHandleCreated)
+                    progressWindow.UpdateProgressBar(100);
+            });
         }
 
         private void sepTab_CheckedChanged(object sender, EventArgs e)
@@ -369,7 +383,7 @@ namespace csv_viewer
                     button3.Enabled = false;
                 }
 
-                else if(val > 10000)
+                else if(val > 100000)
                 {
                     errorProvider1.SetError(channelCount, "number is too big");
                     button3.Enabled = false;
@@ -397,7 +411,7 @@ namespace csv_viewer
                     button3.Enabled = false;
                 }
 
-                else if (val > 10000)
+                else if (val > 100000)
                 {
                     errorProvider1.SetError(rowCount, "number is too big");
                     button3.Enabled = false;
@@ -420,6 +434,12 @@ namespace csv_viewer
         {
             statisticBox.Text = "";
             statisticBox.Lines = graph2.GetStatistic().ToArray();
+        }
+
+        private void Form1_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            graph2.DrawThread.Abort();
+            _background.Abort();
         }
     }
 }

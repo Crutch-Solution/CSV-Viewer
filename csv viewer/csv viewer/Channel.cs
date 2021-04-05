@@ -16,41 +16,46 @@ namespace csv_viewer
         public int Count, NaNs, Valid;
         public float Avg, MinX, MaxX, MinY, MaxY;
         public Channel(String name) { Name = name; }
-        
+
         public void add(PointF val)
         {
-            lock (values)
-            {
-                values.Add(val);
-            }
+            values.Add(val);
         }
 
-        public void recalculateStatistics()
+        public void recalculateStatistics(int limit)
         {
-            lock (values)
-            {
-                var clearList = values.FindAll(x => !float.IsNaN(x.Y));
-                Avg = clearList.Average(x => x.Y);
-                MinX = clearList.Min(x => x.X);
-                MaxX = clearList.Max(x => x.X);
-                MinY = clearList.Min(x => x.Y);
-                MaxY = clearList.Max(x => x.Y);
-                Count = values.Count;
-                NaNs = Count - clearList.Count;
-                Valid = clearList.Count;
-            }
+            List<PointF> clearList = new List<PointF>();
+            for (int i = 0; i < limit && i< values.Count; i++)
+                if (!float.IsNaN(values[i].Y))
+                    clearList.Add(values[i]);
+            Count = values.Count;
+            NaNs = Count - clearList.Count;
+            if (NaNs == Count)
+                return;
+            Avg = clearList.Average(x => x.Y);
+            MinX = clearList.Min(x => x.X);
+            MaxX = clearList.Max(x => x.X);
+            MinY = clearList.Min(x => x.Y);
+            MaxY = clearList.Max(x => x.Y);
+            Valid = clearList.Count;
         }
-        public void scale(float X, float Y)
+        public void scale(float X, float Y, int limit)
         {
-            lock (values)
+            if (NaNs == Count)
+                return;
+            scaled = new List<PointF>();
+            for (int i = 0; i < limit; i++)
             {
-                scaled = new List<PointF>();
-                foreach (var i in values)
-                    scaled.Add(new PointF(i.X * X, i.Y * Y));
+                if (float.IsNaN(values[i].Y))
+                    scaled.Add(new PointF(values[i].X * X, float.NaN));
+                else
+                    scaled.Add(new PointF(values[i].X * X, values[i].Y * Y));
             }
         }
         public void draw(ref Graphics graph, Pen pen)
         {
+            if (NaNs == Count)
+                return;
             if (values.Count > 1)
             {
                 if (NaNs == 0)
