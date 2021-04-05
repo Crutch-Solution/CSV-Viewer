@@ -30,7 +30,7 @@ namespace csv_viewer
             lock (values)
             {
                 var clearList = values.FindAll(x => !float.IsNaN(x.Y));
-                Avg = values.Average(x => x.Y);
+                Avg = clearList.Average(x => x.Y);
                 MinX = clearList.Min(x => x.X);
                 MaxX = clearList.Max(x => x.X);
                 MinY = clearList.Min(x => x.Y);

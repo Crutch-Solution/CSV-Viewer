@@ -457,6 +457,7 @@
             this.rowCount.Name = "rowCount";
             this.rowCount.Size = new System.Drawing.Size(126, 22);
             this.rowCount.TabIndex = 5;
+            this.rowCount.KeyUp += new System.Windows.Forms.KeyEventHandler(this.channelCount_KeyUp);
             // 
             // label1
             // 
@@ -494,6 +495,7 @@
             // 
             this.button3.Anchor = System.Windows.Forms.AnchorStyles.Left;
             this.tableLayoutPanel3.SetColumnSpan(this.button3, 2);
+            this.button3.Enabled = false;
             this.button3.Location = new System.Drawing.Point(3, 136);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(86, 29);
@@ -509,6 +511,7 @@
             this.channelCount.Name = "channelCount";
             this.channelCount.Size = new System.Drawing.Size(126, 22);
             this.channelCount.TabIndex = 4;
+            this.channelCount.KeyUp += new System.Windows.Forms.KeyEventHandler(this.channelCount_KeyUp);
             // 
             // statusStrip1
             // 
@@ -548,6 +551,7 @@
             this.Controls.Add(this.statusStrip1);
             this.Name = "Form1";
             this.Text = "CSV Viewer";
+            this.Resize += new System.EventHandler(this.Form1_Resize);
             this.groupBox1.ResumeLayout(false);
             this.tableLayoutPanel2.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);

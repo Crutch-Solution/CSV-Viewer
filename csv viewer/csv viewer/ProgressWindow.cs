@@ -25,14 +25,17 @@ namespace csv_viewer
         public void UpdateProgressBar(double percent)
         {
             if (percent == 100)
+            {
+                _statusStrip.Invoke((MethodInvoker)delegate () { _statusStrip.Items[0].Text = "Completed successfully"; });
                 Close();
+            }
+
             if (percent >= 0 && percent <= 100)
             {
                 progressBar1.Value = (int)percent;
                 label2.Text = $"{percent}%";
             }
-            _statusStrip.Invoke((MethodInvoker)delegate () { _statusStrip.Items[0].Text = "Completed successfully"; });
-            Refresh();
+
         }
 
         private void button1_Click(object sender, EventArgs e)

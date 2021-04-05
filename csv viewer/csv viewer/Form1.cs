@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -38,6 +39,7 @@ namespace csv_viewer
                 _background = new Thread(new ThreadStart(() => OpenFileBackground(file.FileName)));
                 _background.Start();
                 button2.Enabled = true;
+                Text = $"Csv Viewer - {file.FileName}";
                 //new Task(() => OpenFileBackground(file.FileName)).Start();
                 //_background();
             }
@@ -142,10 +144,10 @@ namespace csv_viewer
 
                     }
                     current += line.Length;
-                    percent = Math.Round(current / fileSize * 100, 1);
+                    percent = (int)(current / fileSize * 100);
                     if (percent != prevPercentForCallback)
                     {
-
+                        prevPercentForCallback = percent;
                         progressWindow.BeginInvoke((MethodInvoker)delegate ()
                         {
                             if (progressWindow.IsHandleCreated)
@@ -162,22 +164,39 @@ namespace csv_viewer
                                 }
                                 catch (Exception ex) { }
                             });
+                            statisticBox.BeginInvoke((MethodInvoker)delegate ()
+                            {
+                                statisticBox.Text = "";
+                                statisticBox.Lines = graph2.GetStatistic().ToArray();
+
+                            });
                             previousPercentForRefreshGraph = percent;
                         }
-                        prevPercentForCallback = percent;
+
                     }
 
                 }
             }
-            progressWindow.BeginInvoke((MethodInvoker)delegate () {
-                if (progressWindow.IsHandleCreated)
-                    progressWindow.UpdateProgressBar(100);
+            graph2.BeginInvoke((MethodInvoker)delegate ()
+            {
+                try
+                {
+                    if (graph2.IsHandleCreated)
+                        graph2.draw();
+                }
+                catch (Exception ex) { }
             });
             statisticBox.BeginInvoke((MethodInvoker)delegate ()
             {
                 statisticBox.Text = "";
                 statisticBox.Lines = graph2.GetStatistic().ToArray();
+
             });
+            progressWindow.BeginInvoke((MethodInvoker)delegate () {
+                if (progressWindow.IsHandleCreated)
+                    progressWindow.UpdateProgressBar(100);
+            });
+
         }
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -201,18 +220,26 @@ namespace csv_viewer
             graph2.clear();
             Text = "CSV Viewer";
             statusStrip1.Items[0].Text = "Completed successfully";
+            statisticBox.Text = "";
             listBox1.Items.Clear();
             button2.Enabled = false;
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
-            
-
+            SaveFileDialog file = new SaveFileDialog();
+            if(file.ShowDialog() == DialogResult.OK)
+            {
+                if(checkBox1.Checked)
+                    _background = new Thread(new ThreadStart(() => GenerateFileBackground(file.FileName, Convert.ToInt32(channelCount.Text), Convert.ToInt32(rowCount.Text), 10)));
+                else
+                    _background = new Thread(new ThreadStart(() => GenerateFileBackground(file.FileName, Convert.ToInt32(channelCount.Text), Convert.ToInt32(rowCount.Text))));
+                _background.Start();
+            }
         }
 
 
-        void FileGenerator(string filename, int channelCount, int rowCount)
+        void GenerateFileBackground(string filename, int channelCount, int rowCount, int NaNs = -1)
         {
             //file generator
             List<Generator> generators = new List<Generator>();
@@ -225,14 +252,37 @@ namespace csv_viewer
                 switch (classType)
                 {
                     case 0:
-                        generators.Add(new Sin());
+                        generators.Add(new Sin(random.Next(1,100)/(10*1.0f)));
                         break;
                     case 1:
-                        generators.Add(new Cos());
+                        generators.Add(new Sin(random.Next(1, 100) / (10 * 1.0f)));
                         break;
                     case 2:
-                        generators.Add(new Saw());
+                        generators.Add(new Sin(random.Next(1, 100) / (10 * 1.0f)));
                         break;
+                }
+            }
+            float step = 20 / (rowCount * 1.0f);
+            List<string> line = new List<string>();
+            for (int i = 0; i < channelCount+1; i++)
+                line.Add(i.ToString());
+            NumberFormatInfo nfi = new NumberFormatInfo();
+            nfi.NumberDecimalSeparator = _decimalSeparator;
+            using (StreamWriter writer = new StreamWriter(filename))
+            {
+                writer.WriteLine(String.Join(_fieldSeparator, line));
+                for (float i = -10, j=0;  j<rowCount; i += step, j++)
+                {
+                    line = new List<string>();
+                    line.Add(Math.Round(i, 3).ToString());
+                    foreach (var generator in generators)
+                    {
+                        if(random.Next(0,100)<NaNs)
+                            line.Add("err");
+                        else
+                        line.Add( generator.getValue(i).ToString(nfi));
+                    }
+                    writer.WriteLine(String.Join(_fieldSeparator, line));
                 }
             }
 
@@ -303,6 +353,73 @@ namespace csv_viewer
                 _DecimalSeparatorMode = decimalCeparatorMode.auto;
                 _decimalSeparator = Thread.CurrentThread.CurrentCulture.NumberFormat.NumberDecimalSeparator;
             }
+        }
+        void validateForGeneration()
+        {
+
+        }
+        private void channelCount_KeyUp(object sender, KeyEventArgs e)
+        {
+            int val = 0;
+            if(int.TryParse(channelCount.Text, out val))
+            {
+                if (val < 1)
+                {
+                    errorProvider1.SetError(channelCount, "number must be positive");
+                    button3.Enabled = false;
+                }
+
+                else if(val > 10000)
+                {
+                    errorProvider1.SetError(channelCount, "number is too big");
+                    button3.Enabled = false;
+                }
+
+                else
+                {
+                    button3.Enabled = true;
+                    errorProvider1.SetError(channelCount, null);
+                }
+            }
+            else
+            {
+                errorProvider1.SetError(channelCount, "invalid number");
+                button3.Enabled = false;
+            }
+
+
+            val = 0;
+            if (int.TryParse(rowCount.Text, out val))
+            {
+                if (val < 1)
+                {
+                    errorProvider1.SetError(rowCount, "number must be positive");
+                    button3.Enabled = false;
+                }
+
+                else if (val > 10000)
+                {
+                    errorProvider1.SetError(rowCount, "number is too big");
+                    button3.Enabled = false;
+                }
+
+                else
+                {
+                    errorProvider1.SetError(rowCount, null);
+                    button3.Enabled = true;
+                }
+            }
+            else
+            {
+                errorProvider1.SetError(rowCount, "invalid number");
+                button3.Enabled = false;
+            }
+        }
+
+        private void Form1_Resize(object sender, EventArgs e)
+        {
+            statisticBox.Text = "";
+            statisticBox.Lines = graph2.GetStatistic().ToArray();
         }
     }
 }
