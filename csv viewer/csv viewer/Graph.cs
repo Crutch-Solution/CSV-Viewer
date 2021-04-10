@@ -134,8 +134,10 @@ namespace csv_viewer
         public void insertInto(int channelIndex, PointF value)
         {
             _channels[channelIndex].add(value);
+            _recalculateNeeded = true;
         }
         int offsets = 5;
+        bool _recalculateNeeded;
         /// <summary>
         /// Calculates current scale values for Graph
         /// </summary>
@@ -162,12 +164,16 @@ namespace csv_viewer
 
 
             foreach (var i in _channels)
-                i.scale(_xScale, _yScale, limit);
+                i.scale(_xScale, _yScale, limit, pictureBox1.Width);
         }
         void drawValues()
         {
-            for(int i=0;i<_channels.Count;i++)
-               _channels[i].recalculateStatistics(limit);
+            if (_recalculateNeeded)
+            {
+                for (int i = 0; i < _channels.Count; i++)
+                    _channels[i].recalculateStatistics(limit);
+                _recalculateNeeded = false;
+            }
             scale();
 
             _graph.Clear(Color.White);
@@ -177,7 +183,7 @@ namespace csv_viewer
             _graph.TranslateTransform(0, -_bitmapHeight);
             _graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
 
-            for(int i = 0; i < Drawable.Count; i++)
+            for (int i = 0; i < Drawable.Count; i++)
                 _channels[Drawable[i]].draw(ref _graph, _legendPens[i%_colorsCount]);
             pictureBox1.Invoke((MethodInvoker)delegate () { pictureBox1.Image = _bitmap;
                 pictureBox1.Refresh();
@@ -272,7 +278,7 @@ namespace csv_viewer
                 _bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
                 _graph = Graphics.FromImage(_bitmap);
 
-                scale();
+              //  scale();
                 draw(true);
 
             }

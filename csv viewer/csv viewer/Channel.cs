@@ -10,7 +10,7 @@ namespace csv_viewer
     class Channel
     {
         public List<PointF> values = new List<PointF>();
-        List<PointF> scaled = new List<PointF>();
+        public List<PointF> scaled = new List<PointF>();
 
         public string Name;
         public int Count, NaNs, Valid;
@@ -39,12 +39,14 @@ namespace csv_viewer
             MaxY = clearList.Max(x => x.Y);
             Valid = clearList.Count;
         }
-        public void scale(float X, float Y, int limit)
+        public void scale(float X, float Y, int limit, int width)
         {
             if (NaNs == Count)
                 return;
             scaled = new List<PointF>();
-            for (int i = 0; i < limit && i< values.Count; i++)
+            int step = (int)(values.Count / (width * 1.0f));
+            int stopPoint = values.Count;
+            for (int i = 0; i < limit && i< stopPoint; i+= step)
             {
                 if (float.IsNaN(values[i].Y))
                     scaled.Add(new PointF(values[i].X * X, float.NaN));
@@ -60,15 +62,16 @@ namespace csv_viewer
             {
                 if (NaNs == 0)
                 {
-                    graph.DrawLines(pen, scaled.ToArray());
+                    for (int i = 0; i < scaled.Count-1; i++)
+                            graph.DrawLine(pen, scaled[i], scaled[i + 1]);
                 }
                 else
                 {
-                    for(int i=0;i< scaled.Count-1; i++)
+                    for (int i = 0; i < scaled.Count-1; i++)
                         if(!float.IsNaN(scaled[i].Y) && !float.IsNaN(scaled[i+1].Y))
-                            graph.DrawLine(pen, scaled[i], scaled[i+1]);
+                            graph.DrawLine(pen, scaled[i], scaled[i + 1]);
                 }
-              
+
             }
         }
         public string GetStatistic()
