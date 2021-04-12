@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace csv_viewer
@@ -10,7 +11,7 @@ namespace csv_viewer
     class Channel
     {
         public List<PointF> values = new List<PointF>();
-        public List<PointF> scaled = new List<PointF>();
+       // public List<PointF> scaled = new List<PointF>();
 
         public string Name;
         public int Count, NaNs, Valid;
@@ -39,39 +40,63 @@ namespace csv_viewer
             MaxY = clearList.Max(x => x.Y);
             Valid = clearList.Count;
         }
-        public void scale(float X, float Y, int limit, int width)
+        //public void scale(float X, float Y, int limit, int width)
+        //{
+        //    if (NaNs == Count)
+        //        return;
+        //    scaled = new List<PointF>();
+        //    int step = (int)(values.Count / (width * 1.0f));
+        //    int stopPoint = values.Count;
+        //    for (int i = 0; i < limit && i< stopPoint; i+= step)
+        //    {
+        //        if (float.IsNaN(values[i].Y))
+        //            scaled.Add(new PointF(values[i].X * X, float.NaN));
+        //        else
+        //            scaled.Add(new PointF(values[i].X * X, values[i].Y * Y));
+        //    }
+        //}
+        //public void draw(ref Graphics graph, Pen pen)
+        //{
+        //    if (NaNs == Count)
+        //        return;
+        //    if (values.Count > 1)
+        //    {
+        //        if (NaNs == 0)
+        //        {
+        //            for (int i = 0; i < scaled.Count-1; i++)
+        //                    graph.DrawLine(pen, scaled[i], scaled[i + 1]);
+        //        }
+        //        else
+        //        {
+        //            for (int i = 0; i < scaled.Count-1; i++)
+        //                if(!float.IsNaN(scaled[i].Y) && !float.IsNaN(scaled[i+1].Y))
+        //                    graph.DrawLine(pen, scaled[i], scaled[i + 1]);
+        //        }
+
+        //    }
+        //}
+        public void draw(ref Graphics graph, Pen pen, int width)
         {
             if (NaNs == Count)
                 return;
-            scaled = new List<PointF>();
-            int step = (int)(values.Count / (width * 1.0f));
-            int stopPoint = values.Count;
-            for (int i = 0; i < limit && i< stopPoint; i+= step)
-            {
-                if (float.IsNaN(values[i].Y))
-                    scaled.Add(new PointF(values[i].X * X, float.NaN));
-                else
-                    scaled.Add(new PointF(values[i].X * X, values[i].Y * Y));
-            }
-        }
-        public void draw(ref Graphics graph, Pen pen)
-        {
-            if (NaNs == Count)
-                return;
+            int step;
+            if (width < values.Count)
+                step = (int)(values.Count / (width * 1.0f));
+            else
+                step = 1;
             if (values.Count > 1)
             {
                 if (NaNs == 0)
                 {
-                    for (int i = 0; i < scaled.Count-1; i++)
-                            graph.DrawLine(pen, scaled[i], scaled[i + 1]);
+                    for (int i = 0; i < values.Count - step; i += step)
+                        graph.DrawLine(pen, values[i], values[i + step]);
                 }
                 else
                 {
-                    for (int i = 0; i < scaled.Count-1; i++)
-                        if(!float.IsNaN(scaled[i].Y) && !float.IsNaN(scaled[i+1].Y))
-                            graph.DrawLine(pen, scaled[i], scaled[i + 1]);
+                    for (int i = 0; i < values.Count - step; i += step)
+                        if (!float.IsNaN(values[i].Y) && !float.IsNaN(values[i + step].Y))
+                            graph.DrawLine(pen, values[i], values[i + step]);
                 }
-
             }
         }
         public string GetStatistic()

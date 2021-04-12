@@ -52,7 +52,10 @@ namespace csv_viewer
         private void button1_Click(object sender, EventArgs e)
         {
             _threadToKill.Abort();
-            _statusStrip.Invoke((MethodInvoker)delegate () { _statusStrip.Items[0].Text = "Interrupted"; });
+            _statusStrip.Invoke((MethodInvoker)delegate () 
+            {
+                _statusStrip.Items[0].Text = "Interrupted";
+            });
             Close();
         }
 

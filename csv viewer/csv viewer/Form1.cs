@@ -207,7 +207,7 @@ namespace csv_viewer
             {
                 statisticBox.Text = "";
                 statisticBox.Lines = graph2.GetStatistic().ToArray();
-                statisticBox.Refresh();
+                //statisticBox.Refresh();
             });
             if (progressWindow.IsHandleCreated)
                 progressWindow.BeginInvoke((MethodInvoker)delegate () {
@@ -477,8 +477,8 @@ namespace csv_viewer
 
         private void Form1_Resize(object sender, EventArgs e)
         {
-            statisticBox.Text = "";
-            statisticBox.Lines = graph2.GetStatistic().ToArray();
+            //statisticBox.Text = "";
+            //statisticBox.Lines = graph2.GetStatistic().ToArray();
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)

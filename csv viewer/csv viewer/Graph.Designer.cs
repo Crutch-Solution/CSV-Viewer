@@ -36,6 +36,7 @@
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.fps = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -50,9 +51,12 @@
             this.pictureBox1.Size = new System.Drawing.Size(793, 334);
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
+            this.pictureBox1.MouseEnter += new System.EventHandler(this.pictureBox1_MouseEnter);
+            this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.fps);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.statusLabel);
             this.groupBox1.Controls.Add(this.checkBox3);
@@ -136,6 +140,16 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(799, 410);
             this.tableLayoutPanel1.TabIndex = 2;
             // 
+            // fps
+            // 
+            this.fps.AutoSize = true;
+            this.fps.Dock = System.Windows.Forms.DockStyle.Right;
+            this.fps.Location = new System.Drawing.Point(763, 18);
+            this.fps.Name = "fps";
+            this.fps.Size = new System.Drawing.Size(27, 17);
+            this.fps.TabIndex = 5;
+            this.fps.Text = "fps";
+            // 
             // Graph
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -162,5 +176,6 @@
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Label label1;
         internal System.Windows.Forms.Label statusLabel;
+        private System.Windows.Forms.Label fps;
     }
 }
