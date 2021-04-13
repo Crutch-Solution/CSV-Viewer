@@ -57,6 +57,7 @@ namespace csv_viewer
 
             _bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             _graph = Graphics.FromImage(_bitmap);
+
             Drawable.Clear();
             _draw += drawValues;
             _legendBrushes = new SolidBrush[_colorsCount];
@@ -79,63 +80,61 @@ namespace csv_viewer
         [SecurityPermissionAttribute(SecurityAction.Demand, ControlThread = true)]
         public void draw(bool force)
         {
-            try
+            if (_channels.Count == 0 || _channels[0].values.Count < 2)
+                return;
+
+
+
+            _draw -= Refresher;
+            _draw += Refresher;
+
+            limit = _channels[0].values.Count;
+            lock (pictureBox1)
             {
-                if (_channels.Count == 0 || _channels[0].values.Count < 2)
-                    return;
-
-                _draw -= Refresher;
-                _draw += Refresher;
-
-                limit = _channels[0].values.Count;
-                lock (pictureBox1)
+                if (force)
                 {
-                    if (force)
+                    if (DrawThread != null)
                     {
-                        if (DrawThread != null)
-                        {
-                            DrawThread.Abort();
-                            DrawThread = null;
-                            //  Thread.Sleep(50);
-                        }
-
-                        _bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-                        _graph = Graphics.FromImage(_bitmap);
-                        _bitmapHeight = _bitmap.Height;
-                        _bitmapWidth = _bitmap.Width;
-
-
-                        _graph.Clear(Color.White);
-                        _graph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                        statusLabel.Text = "Updating, please wait";
-                        DrawThread = new Thread(new ThreadStart(_draw));
-                        DrawThread.Start();
+                        DrawThread.Abort();
+                        DrawThread = null;
+                        //  Thread.Sleep(50);
                     }
-                    else if (!DrawThread.IsAlive)
+
+                    _bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+                    _graph = Graphics.FromImage(_bitmap);
+                    _bitmapHeight = _bitmap.Height;
+                    _bitmapWidth = _bitmap.Width;
+
+
+                    _graph.Clear(Color.White);
+                    _graph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    statusLabel.Text = "Updating, please wait";
+                    DrawThread = new Thread(new ThreadStart(()=> { try { _draw(); } catch (Exception ex) { } }));
+                    DrawThread.Start();
+                }
+                else if (!DrawThread.IsAlive)
+                {
+                    if (DrawThread != null)
                     {
-                        if (DrawThread != null)
-                        {
-                            DrawThread.Abort();
-                            DrawThread = null;
-                            //Thread.Sleep(50);
-                        }
-
-                        _bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-                        _graph = Graphics.FromImage(_bitmap);
-                        _bitmapHeight = _bitmap.Height;
-                        _bitmapWidth = _bitmap.Width;
-
-
-                        _graph.Clear(Color.White);
-                        _graph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                        statusLabel.Text = "Updating, please wait";
-
-                        DrawThread = new Thread(new ThreadStart(_draw));
-                        DrawThread.Start();
+                        DrawThread.Abort();
+                        DrawThread = null;
+                        //Thread.Sleep(50);
                     }
+
+                    _bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+                    _graph = Graphics.FromImage(_bitmap);
+                    _bitmapHeight = _bitmap.Height;
+                    _bitmapWidth = _bitmap.Width;
+
+
+                    _graph.Clear(Color.White);
+                    _graph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                    statusLabel.Text = "Updating, please wait";
+
+                    DrawThread = new Thread(new ThreadStart(() => { try { _draw(); } catch (Exception ex) { } }));
+                    DrawThread.Start();
                 }
             }
-            catch (Exception ex) { }
         }
         /// <summary>
         /// Returns list of current channels statistic
@@ -220,30 +219,7 @@ namespace csv_viewer
             }
             scale();
             //check for buffer
-            bool refreshNeed = false;
-            if (_drawablePrevious.Count != Drawable.Count)
-                refreshNeed = true;
-            else if (_countPrevious != _channels[0].values.Count)
-                refreshNeed = true;
-            else if (_clone.Width != _bitmapWidth || _clone.Height != _bitmapHeight)
-                refreshNeed = true;
-            else
-            {
-                for (int i = 0; i < _drawablePrevious.Count; i++)
-                {
-                    if (_drawablePrevious[i] != Drawable[i])
-                    {
-                        refreshNeed = true;
-                        break;
-                    }
-                }
-            }
-            if (!refreshNeed)
-            {
-                _bitmap = (Bitmap)_clone.Clone();
-                _graph = Graphics.FromImage(_bitmap);
-                return;
-            }
+
             //
 
             //old
@@ -272,11 +248,8 @@ namespace csv_viewer
             //    statusLabel.Text = "";
             //});
             //// pictureBox1.Refresh();
-            _clone =(Bitmap) _bitmap.Clone();
-            _drawablePrevious.Clear();
-            foreach(var i in Drawable)
-                _drawablePrevious.Add(i);
-            _countPrevious = _channels[0].values.Count;
+
+
         }
         void drawAxes()
         {
@@ -351,15 +324,6 @@ namespace csv_viewer
             //  pictureBox1.Image = _bitmap;
             //  pictureBox1.Refresh();
         }
-        void drawCross()
-        {
-
-            _graph.ResetTransform();
-            _graph.DrawLine(Pens.Black, _mousePosition.X - 10, _mousePosition.Y, _mousePosition.X + 10, _mousePosition.Y);
-            _graph.DrawLine(Pens.Black, _mousePosition.X, _mousePosition.Y - 10, _mousePosition.X, _mousePosition.Y + 10);
-            //  pictureBox1.Image = _bitmap;
-            //  pictureBox1.Refresh();
-        }
         Stopwatch _fpsCounter;
         List<long> fpss = new List<long>();
         int fpsLimit = 0;
@@ -369,11 +333,39 @@ namespace csv_viewer
                 pictureBox1.Image = _bitmap;
                 statusLabel.Text = "";
                 pictureBox1.Refresh();
-
+                _clone = (Bitmap)_bitmap.Clone();
                 //refreshCounter++;
                 //prevMsec += _fpsCounter.ElapsedMilliseconds;
                 //if (prevMsec > 5000)
                 //{
+
+            });
+        }
+        private void Graph_Resize(object sender, EventArgs e)
+        {
+            draw(true);
+        }
+        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (DrawThread != null && DrawThread.IsAlive) return;
+            if (_mousePosition.X == e.Location.X && _mousePosition.Y == e.Location.Y) return;
+            if (_clone == null) return;
+            lock (pictureBox1)
+            {
+                _bitmap = (Bitmap)_clone.Clone();
+                _graph = Graphics.FromImage(_bitmap);
+
+                _graph.ResetTransform();
+
+
+                float X = _minX + _mousePosition.X / _xScale,
+                    Y = _minY + (_bitmapHeight - _mousePosition.Y) / _yScale;
+                _graph.DrawString($"{X}, {Y}", new Font("Arial", 12), Brushes.Black, _mousePosition);
+                pictureBox1.Image = _bitmap;
+                pictureBox1.Refresh();
+                _mousePosition = e.Location;
+
+
                 fpss.Add((1000 / _fpsCounter.ElapsedMilliseconds));
                 if (fpss.Count > 3)
                     fpss.RemoveAt(0);
@@ -388,20 +380,10 @@ namespace csv_viewer
                 //}
 
                 _fpsCounter.Restart();
-            });
-        }
-        private void Graph_Resize(object sender, EventArgs e)
-        {
-            draw(true);
-        }
-        private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
-        {
-            //_bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-            //_graph = Graphics.FromImage(_bitmap);
-            if (e.Location.X == _mousePosition.X && e.Location.Y == _mousePosition.Y)
-                return;
-            _mousePosition = e.Location;
-            draw(false);
+
+            }
+
+
 
         }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -435,14 +417,14 @@ namespace csv_viewer
 
         private void pictureBox1_MouseEnter(object sender, EventArgs e)
         {
-            _draw += drawCross;
-
+            draw(true);
         }
 
         private void pictureBox1_MouseLeave(object sender, EventArgs e)
         {
-
+            draw(true);
         }
+
 
         /// <summary>
         /// clear everything

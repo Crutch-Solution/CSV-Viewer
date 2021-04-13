@@ -44,6 +44,7 @@ namespace csv_viewer
         /// <param name="e"></param>
         private void button1_Click(object sender, EventArgs e)
         {
+
             graph2.clear();
             statusStrip1.Items[0].Text = "Opening CSV file";
             OpenFileDialog file = new OpenFileDialog();
@@ -345,7 +346,7 @@ namespace csv_viewer
                     progressWindow.UpdateProgressBar(100);
             });
         }
-
+        
         private void sepTab_CheckedChanged(object sender, EventArgs e)
         {
             if (sepTab.Checked)

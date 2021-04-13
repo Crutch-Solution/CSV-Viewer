@@ -30,13 +30,13 @@
         {
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.fps = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
             this.statusLabel = new System.Windows.Forms.Label();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.fps = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
@@ -45,6 +45,7 @@
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.White;
+            this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Cross;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(3, 3);
             this.pictureBox1.Name = "pictureBox1";
@@ -52,6 +53,7 @@
             this.pictureBox1.TabIndex = 0;
             this.pictureBox1.TabStop = false;
             this.pictureBox1.MouseEnter += new System.EventHandler(this.pictureBox1_MouseEnter);
+            this.pictureBox1.MouseLeave += new System.EventHandler(this.pictureBox1_MouseLeave);
             this.pictureBox1.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureBox1_MouseMove);
             // 
             // groupBox1
@@ -69,6 +71,16 @@
             this.groupBox1.TabIndex = 1;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Display options";
+            // 
+            // fps
+            // 
+            this.fps.AutoSize = true;
+            this.fps.Dock = System.Windows.Forms.DockStyle.Right;
+            this.fps.Location = new System.Drawing.Point(763, 18);
+            this.fps.Name = "fps";
+            this.fps.Size = new System.Drawing.Size(27, 17);
+            this.fps.TabIndex = 5;
+            this.fps.Text = "fps";
             // 
             // label1
             // 
@@ -139,16 +151,6 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 70F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(799, 410);
             this.tableLayoutPanel1.TabIndex = 2;
-            // 
-            // fps
-            // 
-            this.fps.AutoSize = true;
-            this.fps.Dock = System.Windows.Forms.DockStyle.Right;
-            this.fps.Location = new System.Drawing.Point(763, 18);
-            this.fps.Name = "fps";
-            this.fps.Size = new System.Drawing.Size(27, 17);
-            this.fps.TabIndex = 5;
-            this.fps.Text = "fps";
             // 
             // Graph
             // 
