@@ -18,6 +18,8 @@ namespace csv_viewer
     {
         //public fields
         delegate void drawGelegate();
+        static object _accessGraphicsLock = new object();
+        static object _accessChannelsLock = new object();
         /// <summary>
         /// to draw legend / grid / axes at once
         /// </summary>
@@ -72,91 +74,31 @@ namespace csv_viewer
         public Thread DrawThread = new Thread(new ThreadStart(()=> { }));
         int limit = -1;
         int _bitmapHeight, _bitmapWidth;
-        /// <summary>
-        /// Draw current channels 
-        /// </summary>
-        /// <param name="force">Kill previous draw task</param>
-
-        [SecurityPermissionAttribute(SecurityAction.Demand, ControlThread = true)]
-        public void draw(bool force)
-        {
-            if (_channels.Count == 0 || _channels[0].values.Count < 2)
-                return;
-
-
-
-            _draw -= Refresher;
-            _draw += Refresher;
-
-            limit = _channels[0].values.Count;
-            lock (pictureBox1)
-            {
-                if (force)
-                {
-                    if (DrawThread != null)
-                    {
-                        DrawThread.Abort();
-                        DrawThread = null;
-                        //  Thread.Sleep(50);
-                    }
-
-                    _bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-                    _graph = Graphics.FromImage(_bitmap);
-                    _bitmapHeight = _bitmap.Height;
-                    _bitmapWidth = _bitmap.Width;
-
-
-                    _graph.Clear(Color.White);
-                    _graph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                    statusLabel.Text = "Updating, please wait";
-                    DrawThread = new Thread(new ThreadStart(()=> { try { _draw(); } catch (Exception ex) { } }));
-                    DrawThread.Start();
-                }
-                else if (!DrawThread.IsAlive)
-                {
-                    if (DrawThread != null)
-                    {
-                        DrawThread.Abort();
-                        DrawThread = null;
-                        //Thread.Sleep(50);
-                    }
-
-                    _bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
-                    _graph = Graphics.FromImage(_bitmap);
-                    _bitmapHeight = _bitmap.Height;
-                    _bitmapWidth = _bitmap.Width;
-
-
-                    _graph.Clear(Color.White);
-                    _graph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                    statusLabel.Text = "Updating, please wait";
-
-                    DrawThread = new Thread(new ThreadStart(() => { try { _draw(); } catch (Exception ex) { } }));
-                    DrawThread.Start();
-                }
-            }
-        }
+     
         /// <summary>
         /// Returns list of current channels statistic
         /// </summary>
         /// <returns></returns>
         public List<string> GetStatistic()
         {
-            List<string> result = new List<string>();
-            foreach (var i in Drawable)
-                result.Add(_channels[i].GetStatistic());
-            return result;
+            lock (_accessChannelsLock)
+            {
+                List<string> result = new List<string>();
+                foreach (var i in Drawable)
+                    result.Add(_channels[i].GetStatistic());
+                return result;
+            }
         }
         public void addChannel(String name)
         {
-            lock (Drawable)
+            lock (_accessChannelsLock)
             {
-                if (Drawable.Count < 5)
-                    Drawable.Add(_channels.Count);
+
+                    if (Drawable.Count < 5)
+                        Drawable.Add(_channels.Count);
+                    _channels.Add(new Channel(name));
+
             }
-
-            _channels.Add(new Channel(name));
-
         }
         /// <summary>
         /// Name of the specific channel
@@ -165,7 +107,11 @@ namespace csv_viewer
         /// <returns></returns>
         public int getChannelIndex(string channelName)
         {
-            return _channels.FindIndex(x => x.Name == channelName);
+            lock (_accessChannelsLock)
+            {
+
+                    return _channels.FindIndex(x => x.Name == channelName);
+            }
         }
         /// <summary>
         /// Insert point into specific shannel
@@ -174,8 +120,13 @@ namespace csv_viewer
         /// <param name="value"></param>
         public void insertInto(int channelIndex, PointF value)
         {
-            _channels[channelIndex].add(value);
-            _recalculateNeeded = true;
+            lock (_accessChannelsLock)
+            {
+
+                    _channels[channelIndex].add(value);
+                    _recalculateNeeded = true;
+
+            }
         }
         int offsets = 5;
         bool _recalculateNeeded;
@@ -188,6 +139,7 @@ namespace csv_viewer
             _maxY = float.MinValue;
             _minX = float.MaxValue;
             _minY = float.MaxValue;
+
             foreach (var i in Drawable)
             {
                 if (_channels[i].MaxX >_maxX)_maxX = _channels[i].MaxX;
@@ -197,20 +149,77 @@ namespace csv_viewer
             }
             if (_maxX -_minX == 0 ||_maxY -_minY == 0) return;
 
+            _xScale = (_bitmapWidth - offsets*2) / (_maxX -_minX);
+            _yScale = (_bitmapHeight - offsets * 2) / (_maxY - _minY);
 
-
-            _xScale = (pictureBox1.Width - offsets*2) / (_maxX -_minX);
-            _yScale = (pictureBox1.Height - offsets * 2) / (_maxY - _minY);
-
-
-
-            //foreach (var i in _channels)
-            //    i.scale(_xScale, _yScale, limit, pictureBox1.Width);
         }
-        List<int> _drawablePrevious = new List<int>();
-        int _countPrevious=-1;
+        /// <summary>
+        /// Draw current channels 
+        /// </summary>
+        /// <param name="force">Kill previous draw task</param>
+
+        [SecurityPermissionAttribute(SecurityAction.Demand, ControlThread = true)]
+        public void draw(bool force)
+        {
+            lock (_accessChannelsLock)
+            {
+                if (_channels.Count == 0 || _channels[0].values.Count < 2)
+                    return;
+            }
+
+
+
+            if (force || !DrawThread.IsAlive)
+            {
+                if (DrawThread != null)
+                {
+                    DrawThread.Abort();
+                    try
+                    {
+                        DrawThread.Join();
+                    }
+                    catch (Exception ex) { }
+                    DrawThread = null;
+                }
+                else
+                    return;
+                DrawThread = new Thread(new ThreadStart(() =>
+                {
+                    _draw();
+
+                }));
+            }
+            else
+            {
+                return;
+            }
+
+
+            _draw -= Refresher;
+            _draw += Refresher;
+
+            limit = _channels[0].values.Count;
+
+            //clear graphics, update status
+            lock (_accessGraphicsLock)
+            {
+
+                _bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+                _graph = Graphics.FromImage(_bitmap);
+                _bitmapHeight = _bitmap.Height;
+                _bitmapWidth = _bitmap.Width;
+
+
+                _graph.Clear(Color.White);
+                _graph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+                statusLabel.Text = "Updating, please wait";
+
+            }
+            DrawThread.Start();
+        }
         void drawValues()
         {
+
             if (_recalculateNeeded)
             {
                 for (int i = 0; i < _channels.Count; i++)
@@ -218,127 +227,119 @@ namespace csv_viewer
                 _recalculateNeeded = false;
             }
             scale();
-            //check for buffer
+            if (_xScale == 0 || _yScale == 0) return;
+            lock (_accessGraphicsLock)
+            {
 
-            //
+                _graph.ResetTransform();
+                _graph.ScaleTransform(_xScale * 1.0f, -_yScale * 1.0f); //flipped;
+                _graph.TranslateTransform(0, -_bitmapHeight / _yScale);
+                _graph.TranslateTransform(-_minX, -_minY);
 
-            //old
-            ////_graph.Clear(Color.White);
-            ////_graph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-            ////_graph.ResetTransform();
-            ////_graph.ScaleTransform(1.0f, -1.0f); //flipped;
-            ////_graph.TranslateTransform(0, -_bitmapHeight);
-            ////_graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
-            //
+                for (int i = 0; i < Drawable.Count; i++)
+                    _channels[Drawable[i]].draw(ref _graph, _legendPens[i % _colorsCount], _bitmapWidth);
 
-            //new
-
-            _graph.ResetTransform();
-            _graph.ScaleTransform(_xScale * 1.0f,-_yScale *1.0f); //flipped;
-            _graph.TranslateTransform(0, -_bitmapHeight/ _yScale);
-            //_graph.TranslateTransform(-_minX + offsets/ _xScale, -_minY + offsets/ _yScale);
-            _graph.TranslateTransform(-_minX, -_minY);
-            //
-            for (int i = 0; i < Drawable.Count; i++)
-                _channels[Drawable[i]].draw(ref _graph, _legendPens[i%_colorsCount], pictureBox1.Width);
-
-            //pictureBox1.Invoke((MethodInvoker)delegate () {
-            //   // pictureBox1.Image = _bitmap;
-            //    //pictureBox1.Refresh();
-            //    statusLabel.Text = "";
-            //});
-            //// pictureBox1.Refresh();
-
+            }
 
         }
         void drawAxes()
         {
-            pictureBox1.Invoke((MethodInvoker)delegate ()
+
+            if (_xScale == 0 || _yScale == 0) return;
+            lock (_accessGraphicsLock)
             {
                 _graph.ResetTransform();
                 _graph.ScaleTransform(1.0f, -1.0f); //flipped;
-                _graph.TranslateTransform(0, -_bitmap.Height);
+                _graph.TranslateTransform(0, -_bitmapHeight);
                 _graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
 
                 _graph.DrawLine(new Pen(Color.Black, 2), -1, _minY * _yScale - offsets, -1, _maxY * _yScale + offsets);
                 _graph.DrawLine(new Pen(Color.Black, 2), _minX * _xScale - offsets, -1, _maxX * _xScale + offsets, -1);
-               // pictureBox1.Image = _bitmap;
-               // pictureBox1.Refresh();
-            });
+            }
+
+
         }
         void drawLegend()
         {
-            _graph.ResetTransform();
-            float X = 1, Y = 1;
-            foreach (var i in Drawable)
+            if (_xScale == 0 || _yScale == 0) return;
+            lock (_accessGraphicsLock)
             {
-                if (_graph.MeasureString(_channels[i].Name, new Font("Arial", 12)).Width > X)
-                    X = _graph.MeasureString(_channels[i].Name, new Font("Arial", 12)).Width;
-                if (_graph.MeasureString(_channels[i].Name, new Font("Arial", 12)).Height > Y)
-                    Y = _graph.MeasureString(_channels[i].Name, new Font("Arial", 12)).Height;
-            }
-            _graph.FillRectangle(new SolidBrush(BackColorLegend), 20, 20, X, Y * Drawable.Count);
-            for (int i = 0; i < Drawable.Count; i++)
-                _graph.DrawString(_channels[Drawable[i]].Name, new Font("Arial", 12), _legendBrushes[i % _colorsCount], 20, 20 + 20 * i);
-            //  pictureBox1.Image = _bitmap;
-            //  pictureBox1.Refresh();
 
+                _graph.ResetTransform();
+                float X = 1, Y = 1;
+                foreach (var i in Drawable)
+                {
+                    SizeF stringSize = _graph.MeasureString(_channels[i].Name, new Font("Arial", 12));
+                    if (stringSize.Width > X)
+                        X = stringSize.Width;
+                    if (stringSize.Height > Y)
+                        Y = stringSize.Height;
+                }
+                _graph.FillRectangle(new SolidBrush(BackColorLegend), 20, 20, X, Y * Drawable.Count);
+                for (int i = 0; i < Drawable.Count; i++)
+                    _graph.DrawString(_channels[Drawable[i]].Name, new Font("Arial", 12), _legendBrushes[i % _colorsCount], 20, 20 + 20 * i);
+
+            }
         }
         void drawGrid()
         {
-            _graph.ResetTransform();
-            _graph.ScaleTransform(1.0f, -1.0f); //flipped;
-            _graph.TranslateTransform(0, -_bitmap.Height);
-            _graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
+            if (_xScale == 0 || _yScale == 0) return;
 
-            float xStep = (_maxX - _minX) / 10.0f * _xScale;
-            for (float i = 0; i > _minX * _xScale; i -= xStep)
-                _graph.DrawLine(Pens.Gray, i, _minY * _yScale - offsets, i, _maxY * _yScale + offsets);
-            for (float i = 0; i < _maxX * _xScale; i += xStep)
-                _graph.DrawLine(Pens.Gray, i, _minY * _yScale - offsets, i, _maxY * _yScale + offsets);
+            lock (_accessGraphicsLock)
+            {
 
-            float yStep = (_maxY - _minY) / 10.0f * _yScale;
-            for (float i = 0; i > _minY * _yScale; i -= yStep)
-                _graph.DrawLine(Pens.Gray, _minX * _xScale - offsets, i, _maxX * _xScale + offsets, i);
-            for (float i = 0; i < _maxY * _yScale; i += yStep)
-                _graph.DrawLine(Pens.Gray, _minX * _xScale - offsets, i, _maxX * _xScale + offsets, i);
+                    _graph.ResetTransform();
+                    _graph.ScaleTransform(1.0f, -1.0f); //flipped;
+                    _graph.TranslateTransform(0, -_bitmapHeight);
+                    _graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
 
-            //grid prompt
-            _graph.ResetTransform();
-            //_graph.ScaleTransform(1.0f, -1.0f); //flipped;
-            _graph.TranslateTransform(0, +_bitmap.Height);
-            _graph.TranslateTransform(-_minX * _xScale + offsets, +_minY * _yScale - offsets);
+                    float xStep = (_maxX - _minX) / 10.0f * _xScale;
+                    for (float i = 0; i > _minX * _xScale; i -= xStep)
+                        _graph.DrawLine(Pens.Gray, i, _minY * _yScale - offsets, i, _maxY * _yScale + offsets);
+                    for (float i = 0; i < _maxX * _xScale; i += xStep)
+                        _graph.DrawLine(Pens.Gray, i, _minY * _yScale - offsets, i, _maxY * _yScale + offsets);
 
-            for (float i = 0; i > _minX * _xScale; i -= xStep)
-                _graph.DrawString(Math.Round(i / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
-            for (float i = 0; i < _maxX * _xScale; i += xStep)
-                _graph.DrawString(Math.Round(i / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                    float yStep = (_maxY - _minY) / 10.0f * _yScale;
+                    for (float i = 0; i > _minY * _yScale; i -= yStep)
+                        _graph.DrawLine(Pens.Gray, _minX * _xScale - offsets, i, _maxX * _xScale + offsets, i);
+                    for (float i = 0; i < _maxY * _yScale; i += yStep)
+                        _graph.DrawLine(Pens.Gray, _minX * _xScale - offsets, i, _maxX * _xScale + offsets, i);
+
+                    _graph.ResetTransform();
+                    _graph.TranslateTransform(0, +_bitmapHeight);
+                    _graph.TranslateTransform(-_minX * _xScale + offsets, +_minY * _yScale - offsets);
+
+                    for (float i = 0; i > _minX * _xScale; i -= xStep)
+                        _graph.DrawString(Math.Round(i / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                    for (float i = 0; i < _maxX * _xScale; i += xStep)
+                        _graph.DrawString(Math.Round(i / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
 
 
-            for (float i = 0; i > _minY * _yScale; i -= yStep)
-                _graph.DrawString(Math.Round(i / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
-            for (float i = 0; i < _maxY * _yScale; i += yStep)
-                _graph.DrawString(Math.Round(i / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
-            ////
+                    for (float i = 0; i > _minY * _yScale; i -= yStep)
+                        _graph.DrawString(Math.Round(i / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                    for (float i = 0; i < _maxY * _yScale; i += yStep)
+                        _graph.DrawString(Math.Round(i / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
 
-            //  pictureBox1.Image = _bitmap;
-            //  pictureBox1.Refresh();
+            }
         }
         Stopwatch _fpsCounter;
         List<long> fpss = new List<long>();
         int fpsLimit = 0;
-        void Refresher() {
+        void Refresher()
+        {
+            if (_xScale == 0 || _yScale == 0) return;
+
+            lock (_accessGraphicsLock)
+            {
+                _clone = (Bitmap)_bitmap.Clone();
+            }
+
             pictureBox1.Invoke((MethodInvoker)delegate ()
             {
+
                 pictureBox1.Image = _bitmap;
                 statusLabel.Text = "";
                 pictureBox1.Refresh();
-                _clone = (Bitmap)_bitmap.Clone();
-                //refreshCounter++;
-                //prevMsec += _fpsCounter.ElapsedMilliseconds;
-                //if (prevMsec > 5000)
-                //{
-
             });
         }
         private void Graph_Resize(object sender, EventArgs e)
@@ -347,73 +348,78 @@ namespace csv_viewer
         }
         private void pictureBox1_MouseMove(object sender, MouseEventArgs e)
         {
+            //  fps counter
+
+            //    //fpss.Add((1000 / _fpsCounter.ElapsedMilliseconds));
+            //    //if (fpss.Count > 3)
+            //    //    fpss.RemoveAt(0);
+            //    //fpsLimit++;
+            //    //if (fpsLimit > 10)
+            //    //{
+            //    //    fps.Text = Math.Round(fpss.Average()).ToString();
+            //    //    fpsLimit = 0;
+            //    //}
+
+
+            //_fpsCounter.Restart();
+
             if (DrawThread != null && DrawThread.IsAlive) return;
             if (_mousePosition.X == e.Location.X && _mousePosition.Y == e.Location.Y) return;
             if (_clone == null) return;
-            lock (pictureBox1)
+            lock (_accessGraphicsLock)
             {
-                _bitmap = (Bitmap)_clone.Clone();
-                _graph = Graphics.FromImage(_bitmap);
 
-                _graph.ResetTransform();
+                    _bitmap = (Bitmap)_clone.Clone();
+                    _graph = Graphics.FromImage(_bitmap);
 
-
-                float X = _minX + _mousePosition.X / _xScale,
-                    Y = _minY + (_bitmapHeight - _mousePosition.Y) / _yScale;
-                _graph.DrawString($"{X}, {Y}", new Font("Arial", 12), Brushes.Black, _mousePosition);
-                pictureBox1.Image = _bitmap;
-                pictureBox1.Refresh();
-                _mousePosition = e.Location;
+                    _graph.ResetTransform();
 
 
-                fpss.Add((1000 / _fpsCounter.ElapsedMilliseconds));
-                if (fpss.Count > 3)
-                    fpss.RemoveAt(0);
-                fpsLimit++;
-                if (fpsLimit > 10)
-                {
-                    fps.Text = fpss.Average().ToString();
-                    fpsLimit = 0;
-                }
-                //    prevMsec = 0;
-                //    refreshCounter = 0;
-                //}
-
-                _fpsCounter.Restart();
+                    float X = _minX + _mousePosition.X / _xScale,
+                        Y = _minY + (_bitmapHeight - _mousePosition.Y) / _yScale;
+                    _graph.DrawString($"{X}, {Y}", new Font("Arial", 12), Brushes.Black, _mousePosition);
+                    pictureBox1.Image = _bitmap;
+                    pictureBox1.Refresh();
+                    _mousePosition = e.Location;
 
             }
+
+
+       
+
 
 
 
         }
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox1.Checked)
-                _draw += drawGrid;
-            else
-                _draw -= drawGrid;
+            createDelegate();
             draw(true);
         }
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            if (checkBox2.Checked)
-                _draw += drawAxes;
-            else
-                _draw -= drawAxes;
+            createDelegate();
             draw(true);
         }
 
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
         {
-            if(checkBox3.Checked)
-                _draw += drawLegend;
-            else
-                _draw -= drawLegend;
+            createDelegate();
             draw(true);
         }
 
-
+        void createDelegate()
+        {
+            _draw -= drawLegend; _draw -= drawAxes; _draw -= drawGrid; _draw -= drawValues;
+            if (checkBox3.Checked)
+                _draw += drawLegend;
+            if (checkBox2.Checked)
+                _draw += drawAxes;
+            if (checkBox1.Checked)
+                _draw += drawGrid;
+            _draw += drawValues;
+        }
 
         private void pictureBox1_MouseEnter(object sender, EventArgs e)
         {

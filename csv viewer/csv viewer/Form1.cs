@@ -231,7 +231,6 @@ namespace csv_viewer
             }
             try
             {
-                graph2.scale();
                 graph2.draw(true);
                 statisticBox.Text = "";
                 statisticBox.Lines = graph2.GetStatistic().ToArray();

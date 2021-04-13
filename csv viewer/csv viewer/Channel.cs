@@ -25,56 +25,30 @@ namespace csv_viewer
 
         public void recalculateStatistics(int limit)
         {
-            List<PointF> clearList = new List<PointF>();
-            for (int i = 0; i < limit && i< values.Count; i++)
+            Avg = 0;
+            MinX = float.MaxValue;
+            MaxX = float.MinValue;
+            MinY = float.MaxValue;
+            MaxY = float.MinValue;
+            Valid = 0;
+            float X, Y;
+            for (int i = 0; i < limit && i < values.Count; i++)
                 if (!float.IsNaN(values[i].Y))
-                    clearList.Add(values[i]);
-            Count = values.Count;
-            NaNs = Count - clearList.Count;
-            if (NaNs == Count)
-                return;
-            Avg = clearList.Average(x => x.Y);
-            MinX = clearList.Min(x => x.X);
-            MaxX = clearList.Max(x => x.X);
-            MinY = clearList.Min(x => x.Y);
-            MaxY = clearList.Max(x => x.Y);
-            Valid = clearList.Count;
-        }
-        //public void scale(float X, float Y, int limit, int width)
-        //{
-        //    if (NaNs == Count)
-        //        return;
-        //    scaled = new List<PointF>();
-        //    int step = (int)(values.Count / (width * 1.0f));
-        //    int stopPoint = values.Count;
-        //    for (int i = 0; i < limit && i< stopPoint; i+= step)
-        //    {
-        //        if (float.IsNaN(values[i].Y))
-        //            scaled.Add(new PointF(values[i].X * X, float.NaN));
-        //        else
-        //            scaled.Add(new PointF(values[i].X * X, values[i].Y * Y));
-        //    }
-        //}
-        //public void draw(ref Graphics graph, Pen pen)
-        //{
-        //    if (NaNs == Count)
-        //        return;
-        //    if (values.Count > 1)
-        //    {
-        //        if (NaNs == 0)
-        //        {
-        //            for (int i = 0; i < scaled.Count-1; i++)
-        //                    graph.DrawLine(pen, scaled[i], scaled[i + 1]);
-        //        }
-        //        else
-        //        {
-        //            for (int i = 0; i < scaled.Count-1; i++)
-        //                if(!float.IsNaN(scaled[i].Y) && !float.IsNaN(scaled[i+1].Y))
-        //                    graph.DrawLine(pen, scaled[i], scaled[i + 1]);
-        //        }
+                {
+                    Valid++;
+                    X = values[i].X;
+                    Y = values[i].Y;
 
-        //    }
-        //}
+                    Avg += Y;
+                    if (MinX > X) MinX = X;
+                    if (MinY > Y) MinY = Y;
+                    if (MaxX < X) MaxX = X;
+                    if (MaxY < Y) MaxY = Y;
+                }
+            Avg /= (Valid * 1.0f);
+            Count = values.Count;
+            NaNs = Count - Valid;
+        }
         public void draw(ref Graphics graph, Pen pen, int width)
         {
             if (NaNs == Count)
