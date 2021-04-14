@@ -308,7 +308,7 @@ namespace csv_viewer
                         break;
                 }
             }
-            float step = 20 / (rowCount * 1.0f);
+            float step = 20 / (rowCount * 1000.0f);
             List<string> line = new List<string>();
             for (int i = 0; i < channelCount+1; i++)
                 line.Add(i.ToString());

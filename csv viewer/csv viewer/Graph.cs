@@ -230,7 +230,7 @@ namespace csv_viewer
             if (_xScale == 0 || _yScale == 0) return;
             lock (_accessGraphicsLock)
             {
-
+                //invalid value exception!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 _graph.ResetTransform();
                 _graph.ScaleTransform(_xScale * 1.0f, -_yScale * 1.0f); //flipped;
                 _graph.TranslateTransform(0, -_bitmapHeight / _yScale);
@@ -288,37 +288,70 @@ namespace csv_viewer
             lock (_accessGraphicsLock)
             {
 
-                    _graph.ResetTransform();
-                    _graph.ScaleTransform(1.0f, -1.0f); //flipped;
-                    _graph.TranslateTransform(0, -_bitmapHeight);
-                    _graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
-
-                    float xStep = (_maxX - _minX) / 10.0f * _xScale;
-                    for (float i = 0; i > _minX * _xScale; i -= xStep)
-                        _graph.DrawLine(Pens.Gray, i, _minY * _yScale - offsets, i, _maxY * _yScale + offsets);
-                    for (float i = 0; i < _maxX * _xScale; i += xStep)
-                        _graph.DrawLine(Pens.Gray, i, _minY * _yScale - offsets, i, _maxY * _yScale + offsets);
-
-                    float yStep = (_maxY - _minY) / 10.0f * _yScale;
-                    for (float i = 0; i > _minY * _yScale; i -= yStep)
-                        _graph.DrawLine(Pens.Gray, _minX * _xScale - offsets, i, _maxX * _xScale + offsets, i);
-                    for (float i = 0; i < _maxY * _yScale; i += yStep)
-                        _graph.DrawLine(Pens.Gray, _minX * _xScale - offsets, i, _maxX * _xScale + offsets, i);
-
-                    _graph.ResetTransform();
-                    _graph.TranslateTransform(0, +_bitmapHeight);
-                    _graph.TranslateTransform(-_minX * _xScale + offsets, +_minY * _yScale - offsets);
-
-                    for (float i = 0; i > _minX * _xScale; i -= xStep)
-                        _graph.DrawString(Math.Round(i / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
-                    for (float i = 0; i < _maxX * _xScale; i += xStep)
-                        _graph.DrawString(Math.Round(i / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                _graph.ResetTransform();
+                _graph.ScaleTransform(1.0f, -1.0f); //flipped;
+                _graph.TranslateTransform(0, -_bitmapHeight);
+                _graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
 
 
-                    for (float i = 0; i > _minY * _yScale; i -= yStep)
-                        _graph.DrawString(Math.Round(i / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
-                    for (float i = 0; i < _maxY * _yScale; i += yStep)
-                        _graph.DrawString(Math.Round(i / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                float xStep = (_maxX - _minX) / 10.0f;
+                double powNum = Math.Round(Math.Log10(xStep));
+                double dist5 = Math.Abs(Math.Pow(10, powNum) * 5 - xStep);
+                double dist2 = Math.Abs(Math.Pow(10, powNum) * 2 - xStep);
+                double dist1 = Math.Abs(Math.Pow(10, powNum) * 1 - xStep);
+                double[] distances = new double[] { dist1, dist2, dist5 };
+                double[] steps = new double[] { Math.Pow(10, powNum) * 1, Math.Pow(10, powNum) * 2, Math.Pow(10, powNum) * 5 };
+                int minIndex = 0;
+                for (int i = 0; i < 3; i++)
+                {
+                    if (distances[minIndex] > distances[i])
+                        minIndex = i;
+                }
+                xStep = (float)steps[minIndex] * _xScale;
+                for (float i = 0; i > _minX * _xScale; i -= xStep)
+                    _graph.DrawLine(Pens.Gray, i, _minY * _yScale - offsets, i, _maxY * _yScale + offsets);
+                for (float i = 0; i < _maxX * _xScale; i += xStep)
+                    _graph.DrawLine(Pens.Gray, i, _minY * _yScale - offsets, i, _maxY * _yScale + offsets);
+
+                float yStep = (_maxY - _minY) / 10.0f;
+                 powNum = Math.Round(Math.Log10(yStep));
+                 dist5 = Math.Abs(Math.Pow(10, powNum) * 5 - yStep);
+                 dist2 = Math.Abs(Math.Pow(10, powNum) * 2 - yStep);
+                 dist1 = Math.Abs(Math.Pow(10, powNum) * 1 - yStep);
+                distances = new double[] { dist1, dist2, dist5 };
+                steps = new double[] { Math.Pow(10, powNum) * 1, Math.Pow(10, powNum) * 2, Math.Pow(10, powNum) * 5 };
+                minIndex = 0;
+                for (int i = 0; i < 3; i++)
+                {
+                    if (distances[minIndex] > distances[i])
+                        minIndex = i;
+                }
+                yStep = (float)steps[minIndex] * _yScale;
+                for (float i = 0; i > _minY * _yScale; i -= yStep)
+                    _graph.DrawLine(Pens.Gray, _minX * _xScale - offsets, i, _maxX * _xScale + offsets, i);
+                for (float i = 0; i < _maxY * _yScale; i += yStep)
+                    _graph.DrawLine(Pens.Gray, _minX * _xScale - offsets, i, _maxX * _xScale + offsets, i);
+
+                _graph.ResetTransform();
+                _graph.TranslateTransform(0, +_bitmapHeight);
+                _graph.TranslateTransform(-_minX * _xScale + offsets, +_minY * _yScale - offsets);
+
+                for (float i = 0; i > _minX * _xScale; i -= xStep)
+                    _graph.DrawString(Math.Round(i / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                for (float i = 0; i < _maxX * _xScale; i += xStep)
+                    _graph.DrawString(Math.Round(i / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+
+
+                for (float i = 0; i > _minY * _yScale; i -= yStep)
+                    _graph.DrawString(Math.Round(i / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                for (float i = 0; i < _maxY * _yScale; i += yStep)
+                    _graph.DrawString(Math.Round(i / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+
+
+
+
+
+
 
             }
         }
