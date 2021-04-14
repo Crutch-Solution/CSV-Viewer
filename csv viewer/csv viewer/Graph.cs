@@ -25,12 +25,21 @@ namespace csv_viewer
         /// </summary>
         drawGelegate _draw;
         public Color BackColorLegend;
+        public int MinGridStep = 2;
         /// <summary>
         /// List of channels to be draw
         /// </summary>
-        public List<int> Drawable = new List<int>();
+        List<int> _drawable = new List<int>();
         public int FontSize=8;
-
+        public void AddDrawable(int item)
+        {
+            _drawable.Add(item);
+            _recalculateNeeded = true;
+        }
+        public void ClearDrawable()
+        {
+            _drawable.Clear();
+        }
         //private fields
         static int _colorsCount = 6;
         Color[] _legendColors = new Color[] { Color.Blue, Color.Red, Color.Green, Color.DarkBlue, Color.DarkRed, Color.DarkGreen };
@@ -54,13 +63,11 @@ namespace csv_viewer
         public Graph()
         {
             InitializeComponent();
-            _fpsCounter = new Stopwatch();
-            _fpsCounter.Start();
 
             _bitmap = new Bitmap(pictureBox1.Width, pictureBox1.Height);
             _graph = Graphics.FromImage(_bitmap);
 
-            Drawable.Clear();
+            _drawable.Clear();
             _draw += drawValues;
             _legendBrushes = new SolidBrush[_colorsCount];
             _legendPens = new Pen[_colorsCount];
@@ -84,7 +91,7 @@ namespace csv_viewer
             lock (_accessChannelsLock)
             {
                 List<string> result = new List<string>();
-                foreach (var i in Drawable)
+                foreach (var i in _drawable)
                     result.Add(_channels[i].GetStatistic());
                 return result;
             }
@@ -94,8 +101,8 @@ namespace csv_viewer
             lock (_accessChannelsLock)
             {
 
-                    if (Drawable.Count < 5)
-                        Drawable.Add(_channels.Count);
+                    if (_drawable.Count < 5)
+                        _drawable.Add(_channels.Count);
                     _channels.Add(new Channel(name));
 
             }
@@ -128,7 +135,7 @@ namespace csv_viewer
 
             }
         }
-        int offsets = 5;
+        int offsets = 0;
         bool _recalculateNeeded;
         /// <summary>
         /// Calculates current scale values for Graph
@@ -140,7 +147,7 @@ namespace csv_viewer
             _minX = float.MaxValue;
             _minY = float.MaxValue;
 
-            foreach (var i in Drawable)
+            foreach (var i in _drawable)
             {
                 if (_channels[i].MaxX >_maxX)_maxX = _channels[i].MaxX;
                 if (_channels[i].MaxY >_maxY)_maxY = _channels[i].MaxY;
@@ -215,8 +222,11 @@ namespace csv_viewer
                 statusLabel.Text = "Updating, please wait";
 
             }
+
+            _scaleNeeded = true;
             DrawThread.Start();
         }
+        bool _scaleNeeded = false;
         void drawValues()
         {
 
@@ -226,7 +236,11 @@ namespace csv_viewer
                     _channels[i].recalculateStatistics(limit);
                 _recalculateNeeded = false;
             }
-            scale();
+            if (_scaleNeeded)
+            {
+                scale();
+                _scaleNeeded = false;
+            }
             if (_xScale == 0 || _yScale == 0) return;
             lock (_accessGraphicsLock)
             {
@@ -236,8 +250,8 @@ namespace csv_viewer
                 _graph.TranslateTransform(0, -_bitmapHeight / _yScale);
                 _graph.TranslateTransform(-_minX, -_minY);
 
-                for (int i = 0; i < Drawable.Count; i++)
-                    _channels[Drawable[i]].draw(ref _graph, _legendPens[i % _colorsCount], _bitmapWidth);
+                for (int i = 0; i < _drawable.Count; i++)
+                    _channels[_drawable[i]].draw(ref _graph, _legendPens[i % _colorsCount], _bitmapWidth);
 
             }
 
@@ -245,6 +259,17 @@ namespace csv_viewer
         void drawAxes()
         {
 
+            if (_recalculateNeeded)
+            {
+                for (int i = 0; i < _channels.Count; i++)
+                    _channels[i].recalculateStatistics(limit);
+                _recalculateNeeded = false;
+            }
+            if (_scaleNeeded)
+            {
+                scale();
+                _scaleNeeded = false;
+            }
             if (_xScale == 0 || _yScale == 0) return;
             lock (_accessGraphicsLock)
             {
@@ -253,21 +278,33 @@ namespace csv_viewer
                 _graph.TranslateTransform(0, -_bitmapHeight);
                 _graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
 
-                _graph.DrawLine(new Pen(Color.Black, 2), -1, _minY * _yScale - offsets, -1, _maxY * _yScale + offsets);
-                _graph.DrawLine(new Pen(Color.Black, 2), _minX * _xScale - offsets, -1, _maxX * _xScale + offsets, -1);
+                _graph.DrawLine(new Pen(Color.Black, 3), -1, _minY * _yScale - offsets, -1, _maxY * _yScale + offsets);
+                _graph.DrawLine(new Pen(Color.Black, 3), _minX * _xScale - offsets, -1, _maxX * _xScale + offsets, -1);
             }
 
 
         }
         void drawLegend()
         {
+
+            if (_recalculateNeeded)
+            {
+                for (int i = 0; i < _channels.Count; i++)
+                    _channels[i].recalculateStatistics(limit);
+                _recalculateNeeded = false;
+            }
+            if (_scaleNeeded)
+            {
+                scale();
+                _scaleNeeded = false;
+            }
             if (_xScale == 0 || _yScale == 0) return;
             lock (_accessGraphicsLock)
             {
 
                 _graph.ResetTransform();
                 float X = 1, Y = 1;
-                foreach (var i in Drawable)
+                foreach (var i in _drawable)
                 {
                     SizeF stringSize = _graph.MeasureString(_channels[i].Name, new Font("Arial", 12));
                     if (stringSize.Width > X)
@@ -275,14 +312,26 @@ namespace csv_viewer
                     if (stringSize.Height > Y)
                         Y = stringSize.Height;
                 }
-                _graph.FillRectangle(new SolidBrush(BackColorLegend), 20, 20, X, Y * Drawable.Count);
-                for (int i = 0; i < Drawable.Count; i++)
-                    _graph.DrawString(_channels[Drawable[i]].Name, new Font("Arial", 12), _legendBrushes[i % _colorsCount], 20, 20 + 20 * i);
+                _graph.FillRectangle(new SolidBrush(BackColorLegend), 20, 20, X, Y * _drawable.Count);
+                for (int i = 0; i < _drawable.Count; i++)
+                    _graph.DrawString(_channels[_drawable[i]].Name, new Font("Arial", 12), _legendBrushes[i % _colorsCount], 20, 20 + 20 * i);
 
             }
         }
         void drawGrid()
         {
+
+            if (_recalculateNeeded)
+            {
+                for (int i = 0; i < _channels.Count; i++)
+                    _channels[i].recalculateStatistics(limit);
+                _recalculateNeeded = false;
+            }
+            if (_scaleNeeded)
+            {
+                scale();
+                _scaleNeeded = false;
+            }
             if (_xScale == 0 || _yScale == 0) return;
 
             lock (_accessGraphicsLock)
@@ -295,7 +344,12 @@ namespace csv_viewer
 
 
                 float xStep = (_maxX - _minX) / 10.0f;
-                double powNum = Math.Round(Math.Log10(xStep));
+
+                if (xStep * _xScale < MinGridStep)
+                    xStep = MinGridStep / _xScale;
+
+
+                double powNum = Math.Floor(Math.Log10(xStep));
                 double dist5 = Math.Abs(Math.Pow(10, powNum) * 5 - xStep);
                 double dist2 = Math.Abs(Math.Pow(10, powNum) * 2 - xStep);
                 double dist1 = Math.Abs(Math.Pow(10, powNum) * 1 - xStep);
@@ -308,16 +362,23 @@ namespace csv_viewer
                         minIndex = i;
                 }
                 xStep = (float)steps[minIndex] * _xScale;
+
+
                 for (float i = 0; i > _minX * _xScale; i -= xStep)
                     _graph.DrawLine(Pens.Gray, i, _minY * _yScale - offsets, i, _maxY * _yScale + offsets);
                 for (float i = 0; i < _maxX * _xScale; i += xStep)
                     _graph.DrawLine(Pens.Gray, i, _minY * _yScale - offsets, i, _maxY * _yScale + offsets);
 
                 float yStep = (_maxY - _minY) / 10.0f;
-                 powNum = Math.Round(Math.Log10(yStep));
-                 dist5 = Math.Abs(Math.Pow(10, powNum) * 5 - yStep);
-                 dist2 = Math.Abs(Math.Pow(10, powNum) * 2 - yStep);
-                 dist1 = Math.Abs(Math.Pow(10, powNum) * 1 - yStep);
+
+
+                if (yStep * _yScale < MinGridStep)
+                    yStep = MinGridStep / _yScale;
+
+                powNum = Math.Floor(Math.Log10(yStep));
+                dist5 = Math.Abs(Math.Pow(10, powNum) * 5 - yStep);
+                dist2 = Math.Abs(Math.Pow(10, powNum) * 2 - yStep);
+                dist1 = Math.Abs(Math.Pow(10, powNum) * 1 - yStep);
                 distances = new double[] { dist1, dist2, dist5 };
                 steps = new double[] { Math.Pow(10, powNum) * 1, Math.Pow(10, powNum) * 2, Math.Pow(10, powNum) * 5 };
                 minIndex = 0;
@@ -327,6 +388,10 @@ namespace csv_viewer
                         minIndex = i;
                 }
                 yStep = (float)steps[minIndex] * _yScale;
+
+
+
+
                 for (float i = 0; i > _minY * _yScale; i -= yStep)
                     _graph.DrawLine(Pens.Gray, _minX * _xScale - offsets, i, _maxX * _xScale + offsets, i);
                 for (float i = 0; i < _maxY * _yScale; i += yStep)
@@ -336,28 +401,61 @@ namespace csv_viewer
                 _graph.TranslateTransform(0, +_bitmapHeight);
                 _graph.TranslateTransform(-_minX * _xScale + offsets, +_minY * _yScale - offsets);
 
-                for (float i = 0; i > _minX * _xScale; i -= xStep)
-                    _graph.DrawString(Math.Round(i / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
-                for (float i = 0; i < _maxX * _xScale; i += xStep)
-                    _graph.DrawString(Math.Round(i / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                if (xStep / _xScale < 0.0001)
+                {
+                    for (float i = 0; i > _minX * _xScale; i -= xStep)
+                        _graph.DrawString(Math.Round(((int)(i / xStep) * xStep) / _xScale, 3).ToString("0.0E00"), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                    for (float i = 0; i < _maxX * _xScale; i += xStep)
+                        _graph.DrawString(Math.Round(((int)(i / xStep) * xStep) / _xScale, 3).ToString("0.0E00"), new Font("Arial", FontSize), Brushes.Gray, i, 0);
 
+                }
+                else if (xStep / _xScale > 10000)
+                {
+                    for (float i = 0; i > _minX * _xScale; i -= xStep)
+                        _graph.DrawString(Math.Round(((int)(i / xStep) * xStep) / _xScale, 3).ToString("0+E00"), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                    for (float i = 0; i < _maxX * _xScale; i += xStep)
+                        _graph.DrawString(Math.Round(((int)(i / xStep) * xStep) / _xScale, 3).ToString("0+E00"), new Font("Arial", FontSize), Brushes.Gray, i, 0);
 
-                for (float i = 0; i > _minY * _yScale; i -= yStep)
-                    _graph.DrawString(Math.Round(i / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
-                for (float i = 0; i < _maxY * _yScale; i += yStep)
-                    _graph.DrawString(Math.Round(i / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                }
+                else
+                {
+                    for (float i = 0; i > _minX * _xScale; i -= xStep)
+                        _graph.DrawString(Math.Round(((int)(i / xStep) * xStep) / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                    for (float i = 0; i < _maxX * _xScale; i += xStep)
+                        _graph.DrawString(Math.Round(((int)(i / xStep) * xStep) / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
 
+                }
 
+                if (yStep / _yScale < 0.001)
+                {
+                    for (float i = 0; i > _minY * _yScale; i -= yStep)
+                        _graph.DrawString(Math.Round(((int)(i / yStep) * yStep) / _yScale, 3).ToString("0.0E00"), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                    for (float i = 0; i < _maxY * _yScale; i += yStep)
+                        _graph.DrawString(Math.Round(((int)(i / yStep) * yStep) / _yScale, 3).ToString("0.0E00"), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                }
+                else if (yStep / _yScale > 10000)
+                {
+                    for (float i = 0; i > _minY * _yScale; i -= yStep)
+                        _graph.DrawString(Math.Round(((int)(i / yStep) * yStep) / _yScale, 3).ToString("0+E00"), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                    for (float i = 0; i < _maxY * _yScale; i += yStep)
+                        _graph.DrawString(Math.Round(((int)(i / yStep) * yStep) / _yScale, 3).ToString("0+E00"), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
 
+                }
+                else
+                {
+                    for (float i = 0; i > _minY * _yScale; i -= yStep)
+                        _graph.DrawString(Math.Round(((int)(i / yStep) * yStep) / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                    for (float i = 0; i < _maxY * _yScale; i += yStep)
+                        _graph.DrawString(Math.Round(((int)(i / yStep) * yStep) / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
 
+                }
 
 
 
             }
         }
-        Stopwatch _fpsCounter;
-        List<long> fpss = new List<long>();
-        int fpsLimit = 0;
+
+
         void Refresher()
         {
             if (_xScale == 0 || _yScale == 0) return;
@@ -396,24 +494,26 @@ namespace csv_viewer
 
             //_fpsCounter.Restart();
 
-            if (DrawThread != null && DrawThread.IsAlive) return;
+
             if (_mousePosition.X == e.Location.X && _mousePosition.Y == e.Location.Y) return;
-            if (_clone == null) return;
+            if (DrawThread != null && DrawThread.IsAlive) return;
             lock (_accessGraphicsLock)
             {
+                if (_clone == null) _clone = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+                _bitmap = (Bitmap)_clone.Clone();
+                _graph = Graphics.FromImage(_bitmap);
 
-                    _bitmap = (Bitmap)_clone.Clone();
-                    _graph = Graphics.FromImage(_bitmap);
-
-                    _graph.ResetTransform();
+                _graph.ResetTransform();
 
 
-                    float X = _minX + _mousePosition.X / _xScale,
-                        Y = _minY + (_bitmapHeight - _mousePosition.Y) / _yScale;
-                    _graph.DrawString($"{X}, {Y}", new Font("Arial", 12), Brushes.Black, _mousePosition);
-                    pictureBox1.Image = _bitmap;
-                    pictureBox1.Refresh();
-                    _mousePosition = e.Location;
+                float X = _minX + _mousePosition.X / _xScale,
+                    Y = _minY + (_bitmapHeight - _mousePosition.Y) / _yScale;
+                _graph.DrawString($"{X}, {Y}", new Font("Arial", 12), Brushes.Black, _mousePosition.X, _mousePosition.Y-20);
+                _graph.DrawLine(Pens.Violet, _mousePosition.X, 0, _mousePosition.X, _bitmapHeight);
+                _graph.DrawLine(Pens.Violet, 0, _mousePosition.Y, _bitmapWidth, _mousePosition.Y);
+                pictureBox1.Image = _bitmap;
+                pictureBox1.Refresh();
+                _mousePosition = e.Location;
 
             }
 
@@ -447,20 +547,40 @@ namespace csv_viewer
             _draw -= drawLegend; _draw -= drawAxes; _draw -= drawGrid; _draw -= drawValues;
             if (checkBox3.Checked)
                 _draw += drawLegend;
-            if (checkBox2.Checked)
-                _draw += drawAxes;
+        
+            _draw += drawValues;
             if (checkBox1.Checked)
                 _draw += drawGrid;
-            _draw += drawValues;
+            if (checkBox2.Checked)
+                _draw += drawAxes;
+
         }
 
         private void pictureBox1_MouseEnter(object sender, EventArgs e)
         {
-            draw(true);
+            Cursor.Hide();
         }
 
         private void pictureBox1_MouseLeave(object sender, EventArgs e)
         {
+            lock (_accessGraphicsLock)
+            {
+                if (_clone == null) _clone = new Bitmap(pictureBox1.Width, pictureBox1.Height);
+                _bitmap = (Bitmap)_clone.Clone();
+                _graph = Graphics.FromImage(_bitmap);
+
+
+                pictureBox1.Image = _bitmap;
+                pictureBox1.Refresh();
+
+            }
+            Cursor.Show();
+        }
+
+        private void trackBar1_Scroll(object sender, EventArgs e)
+        {
+            MinGridStep = trackBar1.Value;
+            gridStepValue.Text = MinGridStep.ToString();
             draw(true);
         }
 
@@ -472,7 +592,7 @@ namespace csv_viewer
         {
             _channels.Clear();
             _graph.Clear(Color.White);
-            Drawable.Clear();
+            _drawable.Clear();
             pictureBox1.Image = _bitmap;
             Refresh();
         }

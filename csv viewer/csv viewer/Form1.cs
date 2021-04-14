@@ -224,10 +224,10 @@ namespace csv_viewer
         /// <param name="e"></param>
         private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            graph2.Drawable.Clear();
+            graph2.ClearDrawable();
             foreach (var i in listBox1.SelectedIndices)
             {
-                graph2.Drawable.Add(Convert.ToInt32(i));
+                graph2.AddDrawable(Convert.ToInt32(i));
             }
             try
             {

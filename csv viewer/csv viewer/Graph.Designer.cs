@@ -30,7 +30,8 @@
         {
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.fps = new System.Windows.Forms.Label();
+            this.gridStepValue = new System.Windows.Forms.Label();
+            this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.label1 = new System.Windows.Forms.Label();
             this.statusLabel = new System.Windows.Forms.Label();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
@@ -39,13 +40,14 @@
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // pictureBox1
             // 
             this.pictureBox1.BackColor = System.Drawing.Color.White;
-            this.pictureBox1.Cursor = System.Windows.Forms.Cursors.Cross;
+            this.pictureBox1.Cursor = System.Windows.Forms.Cursors.No;
             this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox1.Location = new System.Drawing.Point(3, 3);
             this.pictureBox1.Name = "pictureBox1";
@@ -58,7 +60,8 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.fps);
+            this.groupBox1.Controls.Add(this.gridStepValue);
+            this.groupBox1.Controls.Add(this.trackBar1);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.statusLabel);
             this.groupBox1.Controls.Add(this.checkBox3);
@@ -72,15 +75,26 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Display options";
             // 
-            // fps
+            // gridStepValue
             // 
-            this.fps.AutoSize = true;
-            this.fps.Dock = System.Windows.Forms.DockStyle.Right;
-            this.fps.Location = new System.Drawing.Point(763, 18);
-            this.fps.Name = "fps";
-            this.fps.Size = new System.Drawing.Size(27, 17);
-            this.fps.TabIndex = 5;
-            this.fps.Text = "fps";
+            this.gridStepValue.AutoSize = true;
+            this.gridStepValue.Dock = System.Windows.Forms.DockStyle.Right;
+            this.gridStepValue.Location = new System.Drawing.Point(550, 18);
+            this.gridStepValue.Name = "gridStepValue";
+            this.gridStepValue.Size = new System.Drawing.Size(0, 17);
+            this.gridStepValue.TabIndex = 6;
+            // 
+            // trackBar1
+            // 
+            this.trackBar1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.trackBar1.Location = new System.Drawing.Point(550, 18);
+            this.trackBar1.Maximum = 50;
+            this.trackBar1.Minimum = 1;
+            this.trackBar1.Name = "trackBar1";
+            this.trackBar1.Size = new System.Drawing.Size(240, 43);
+            this.trackBar1.TabIndex = 5;
+            this.trackBar1.Value = 1;
+            this.trackBar1.Scroll += new System.EventHandler(this.trackBar1_Scroll);
             // 
             // label1
             // 
@@ -163,6 +177,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
             this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -178,6 +193,7 @@
         private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Label label1;
         internal System.Windows.Forms.Label statusLabel;
-        private System.Windows.Forms.Label fps;
+        private System.Windows.Forms.Label gridStepValue;
+        private System.Windows.Forms.TrackBar trackBar1;
     }
 }
