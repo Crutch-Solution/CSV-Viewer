@@ -135,7 +135,7 @@ namespace csv_viewer
 
             }
         }
-        int offsets = 0;
+        int _offsets = 1;
         bool _recalculateNeeded;
         /// <summary>
         /// Calculates current scale values for Graph
@@ -156,8 +156,15 @@ namespace csv_viewer
             }
             if (_maxX -_minX == 0 ||_maxY -_minY == 0) return;
 
-            _xScale = (_bitmapWidth - offsets*2) / (_maxX -_minX);
-            _yScale = (_bitmapHeight - offsets * 2) / (_maxY - _minY);
+            _xScale = (_bitmapWidth - _offsets * 2) / (_maxX -_minX);
+            _yScale = (_bitmapHeight - _offsets * 2) / (_maxY - _minY);
+
+            foreach (var i in _legendPens)
+            {
+                i.ResetTransform();
+                i.ScaleTransform(1 / _xScale, 1 / _yScale);
+            }
+
 
         }
         /// <summary>
@@ -192,8 +199,14 @@ namespace csv_viewer
                     return;
                 DrawThread = new Thread(new ThreadStart(() =>
                 {
-                    _draw();
+                    try
+                    {
+                        _draw();
+                    }
+                    catch (Exception ex)
+                    {
 
+                    }
                 }));
             }
             else
@@ -219,7 +232,7 @@ namespace csv_viewer
 
                 _graph.Clear(Color.White);
                 _graph.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-                statusLabel.Text = "Updating, please wait";
+                statusLabel.Text = "Updating";
 
             }
 
@@ -248,7 +261,7 @@ namespace csv_viewer
                 _graph.ResetTransform();
                 _graph.ScaleTransform(_xScale * 1.0f, -_yScale * 1.0f); //flipped;
                 _graph.TranslateTransform(0, -_bitmapHeight / _yScale);
-                _graph.TranslateTransform(-_minX, -_minY);
+                _graph.TranslateTransform(-_minX + _offsets / _xScale, -_minY + _offsets / _yScale);
 
                 for (int i = 0; i < _drawable.Count; i++)
                     _channels[_drawable[i]].draw(ref _graph, _legendPens[i % _colorsCount], _bitmapWidth);
@@ -276,10 +289,10 @@ namespace csv_viewer
                 _graph.ResetTransform();
                 _graph.ScaleTransform(1.0f, -1.0f); //flipped;
                 _graph.TranslateTransform(0, -_bitmapHeight);
-                _graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
+                _graph.TranslateTransform(-_minX * _xScale + _offsets, -_minY * _yScale + _offsets);
 
-                _graph.DrawLine(new Pen(Color.Black, 3), -1, _minY * _yScale - offsets, -1, _maxY * _yScale + offsets);
-                _graph.DrawLine(new Pen(Color.Black, 3), _minX * _xScale - offsets, -1, _maxX * _xScale + offsets, -1);
+                _graph.DrawLine(new Pen(Color.Black, 3), -1, _minY * _yScale - _offsets, -1, _maxY * _yScale + _offsets);
+                _graph.DrawLine(new Pen(Color.Black, 3), _minX * _xScale - _offsets, -1, _maxX * _xScale + _offsets, -1);
             }
 
 
@@ -340,7 +353,7 @@ namespace csv_viewer
                 _graph.ResetTransform();
                 _graph.ScaleTransform(1.0f, -1.0f); //flipped;
                 _graph.TranslateTransform(0, -_bitmapHeight);
-                _graph.TranslateTransform(-_minX * _xScale + offsets, -_minY * _yScale + offsets);
+                _graph.TranslateTransform(-_minX * _xScale + _offsets, -_minY * _yScale + _offsets);
 
 
                 float xStep = (_maxX - _minX) / 10.0f;
@@ -365,9 +378,9 @@ namespace csv_viewer
 
 
                 for (float i = 0; i > _minX * _xScale; i -= xStep)
-                    _graph.DrawLine(Pens.Gray, i, _minY * _yScale - offsets, i, _maxY * _yScale + offsets);
+                    _graph.DrawLine(Pens.Gray, i, _minY * _yScale - _offsets, i, _maxY * _yScale + _offsets);
                 for (float i = 0; i < _maxX * _xScale; i += xStep)
-                    _graph.DrawLine(Pens.Gray, i, _minY * _yScale - offsets, i, _maxY * _yScale + offsets);
+                    _graph.DrawLine(Pens.Gray, i, _minY * _yScale - _offsets, i, _maxY * _yScale + _offsets);
 
                 float yStep = (_maxY - _minY) / 10.0f;
 
@@ -393,60 +406,65 @@ namespace csv_viewer
 
 
                 for (float i = 0; i > _minY * _yScale; i -= yStep)
-                    _graph.DrawLine(Pens.Gray, _minX * _xScale - offsets, i, _maxX * _xScale + offsets, i);
+                    _graph.DrawLine(Pens.Gray, _minX * _xScale - _offsets, i, _maxX * _xScale + _offsets, i);
                 for (float i = 0; i < _maxY * _yScale; i += yStep)
-                    _graph.DrawLine(Pens.Gray, _minX * _xScale - offsets, i, _maxX * _xScale + offsets, i);
+                    _graph.DrawLine(Pens.Gray, _minX * _xScale - _offsets, i, _maxX * _xScale + _offsets, i);
 
                 _graph.ResetTransform();
                 _graph.TranslateTransform(0, +_bitmapHeight);
-                _graph.TranslateTransform(-_minX * _xScale + offsets, +_minY * _yScale - offsets);
+                _graph.TranslateTransform(-_minX * _xScale + _offsets, +_minY * _yScale - _offsets);
 
+
+                //display origin
+                _graph.DrawString("0", new Font("Arial", FontSize), Brushes.Gray, 0, 0);
+                //
+           
                 if (xStep / _xScale < 0.0001)
                 {
-                    for (float i = 0; i > _minX * _xScale; i -= xStep)
-                        _graph.DrawString(Math.Round(((int)(i / xStep) * xStep) / _xScale, 3).ToString("0.0E00"), new Font("Arial", FontSize), Brushes.Gray, i, 0);
-                    for (float i = 0; i < _maxX * _xScale; i += xStep)
-                        _graph.DrawString(Math.Round(((int)(i / xStep) * xStep) / _xScale, 3).ToString("0.0E00"), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                    for (float i = -xStep; i > _minX * _xScale; i -= xStep)
+                        _graph.DrawString(((Math.Round(i / xStep) * xStep) / _xScale).ToString("0.0E00"), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                    for (float i = +xStep; i < _maxX * _xScale; i += xStep)
+                        _graph.DrawString(((Math.Round(i / xStep) * xStep) / _xScale).ToString("0.0E00"), new Font("Arial", FontSize), Brushes.Gray, i, 0);
 
                 }
                 else if (xStep / _xScale > 10000)
                 {
-                    for (float i = 0; i > _minX * _xScale; i -= xStep)
-                        _graph.DrawString(Math.Round(((int)(i / xStep) * xStep) / _xScale, 3).ToString("0+E00"), new Font("Arial", FontSize), Brushes.Gray, i, 0);
-                    for (float i = 0; i < _maxX * _xScale; i += xStep)
-                        _graph.DrawString(Math.Round(((int)(i / xStep) * xStep) / _xScale, 3).ToString("0+E00"), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                    for (float i = -xStep; i > _minX * _xScale; i -= xStep)
+                        _graph.DrawString(Math.Round((Math.Round(i / xStep) * xStep) / _xScale, 3).ToString("0+E00"), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                    for (float i = +xStep; i < _maxX * _xScale; i += xStep)
+                        _graph.DrawString(Math.Round((Math.Round(i / xStep) * xStep) / _xScale, 3).ToString("0+E00"), new Font("Arial", FontSize), Brushes.Gray, i, 0);
 
                 }
                 else
                 {
-                    for (float i = 0; i > _minX * _xScale; i -= xStep)
-                        _graph.DrawString(Math.Round(((int)(i / xStep) * xStep) / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
-                    for (float i = 0; i < _maxX * _xScale; i += xStep)
-                        _graph.DrawString(Math.Round(((int)(i / xStep) * xStep) / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                    for (float i = -xStep; i > _minX * _xScale; i -= xStep)
+                        _graph.DrawString(Math.Round((Math.Round(i / xStep) * xStep) / _xScale, 4).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                    for (float i = +xStep; i < _maxX * _xScale; i += xStep)
+                        _graph.DrawString(Math.Round((Math.Round(i / xStep) * xStep) / _xScale, 4).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
 
                 }
 
-                if (yStep / _yScale < 0.001)
+                if (yStep / _yScale < 0.0001)
                 {
-                    for (float i = 0; i > _minY * _yScale; i -= yStep)
-                        _graph.DrawString(Math.Round(((int)(i / yStep) * yStep) / _yScale, 3).ToString("0.0E00"), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
-                    for (float i = 0; i < _maxY * _yScale; i += yStep)
-                        _graph.DrawString(Math.Round(((int)(i / yStep) * yStep) / _yScale, 3).ToString("0.0E00"), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                    for (float i = -yStep; i > _minY * _yScale; i -= yStep)
+                        _graph.DrawString(((Math.Round(i / yStep) * yStep) / _yScale).ToString("0.0E00"), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                    for (float i = +yStep; i < _maxY * _yScale; i += yStep)
+                        _graph.DrawString(((Math.Round(i / yStep) * yStep) / _yScale).ToString("0.0E00"), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
                 }
                 else if (yStep / _yScale > 10000)
                 {
-                    for (float i = 0; i > _minY * _yScale; i -= yStep)
-                        _graph.DrawString(Math.Round(((int)(i / yStep) * yStep) / _yScale, 3).ToString("0+E00"), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
-                    for (float i = 0; i < _maxY * _yScale; i += yStep)
-                        _graph.DrawString(Math.Round(((int)(i / yStep) * yStep) / _yScale, 3).ToString("0+E00"), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                    for (float i = -yStep; i > _minY * _yScale; i -= yStep)
+                        _graph.DrawString(Math.Round((Math.Round(i / yStep) * yStep) / _yScale, 3).ToString("0+E00"), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                    for (float i = +yStep; i < _maxY * _yScale; i += yStep)
+                        _graph.DrawString(Math.Round((Math.Round(i / yStep) * yStep) / _yScale, 3).ToString("0+E00"), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
 
                 }
                 else
                 {
-                    for (float i = 0; i > _minY * _yScale; i -= yStep)
-                        _graph.DrawString(Math.Round(((int)(i / yStep) * yStep) / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
-                    for (float i = 0; i < _maxY * _yScale; i += yStep)
-                        _graph.DrawString(Math.Round(((int)(i / yStep) * yStep) / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                    for (float i = -yStep; i > _minY * _yScale; i -= yStep)
+                        _graph.DrawString(Math.Round((Math.Round(i / yStep) * yStep) / _yScale, 4).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                    for (float i = +yStep; i < _maxY * _yScale; i += yStep)
+                        _graph.DrawString(Math.Round((Math.Round(i / yStep) * yStep) / _yScale, 4).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
 
                 }
 
@@ -506,8 +524,8 @@ namespace csv_viewer
                 _graph.ResetTransform();
 
 
-                float X = _minX + _mousePosition.X / _xScale,
-                    Y = _minY + (_bitmapHeight - _mousePosition.Y) / _yScale;
+                float X = _minX + _mousePosition.X / _xScale - _offsets / _xScale,
+                    Y = _minY + (_bitmapHeight - _mousePosition.Y) / _yScale - _offsets / _yScale;
                 _graph.DrawString($"{X}, {Y}", new Font("Arial", 12), Brushes.Black, _mousePosition.X, _mousePosition.Y-20);
                 _graph.DrawLine(Pens.Violet, _mousePosition.X, 0, _mousePosition.X, _bitmapHeight);
                 _graph.DrawLine(Pens.Violet, 0, _mousePosition.Y, _bitmapWidth, _mousePosition.Y);
@@ -581,6 +599,13 @@ namespace csv_viewer
         {
             MinGridStep = trackBar1.Value;
             gridStepValue.Text = MinGridStep.ToString();
+            draw(true);
+        }
+
+        private void trackBar2_Scroll(object sender, EventArgs e)
+        {
+            _offsets = trackBar2.Value;
+            borderWidth.Text = _offsets.ToString();
             draw(true);
         }
 

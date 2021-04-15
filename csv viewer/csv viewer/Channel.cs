@@ -75,7 +75,7 @@ namespace csv_viewer
         }
         public string GetStatistic()
         {
-            return $"Channel: {Name}. Count = {Count} (NaNs = {NaNs}, Valid={Valid}); Avg = {Math.Round(Avg, 3)}; Range = [{Math.Round(MinY, 3)}...{Math.Round(MaxY, 3)}]";
+            return $"Channel: {Name}. Count = {Count} (NaNs = {NaNs}, Valid={Valid}); Avg = {Avg}; Range = [{MinY}...{MaxY}]";
         }
     }
 }

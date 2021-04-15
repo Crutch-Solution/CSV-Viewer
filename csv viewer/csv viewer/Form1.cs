@@ -18,7 +18,8 @@ namespace csv_viewer
         /// <summary>
         /// Background operation (open / generate)
         /// </summary>
-        Thread _background = new Thread(new ThreadStart(()=> { }));
+        Thread _openBackground = new Thread(new ThreadStart(()=> { }));
+        List<Thread> _generateBackground = new List<Thread>();
         /// <summary>
         /// current decimal delimeter mode
         /// </summary>
@@ -32,6 +33,7 @@ namespace csv_viewer
         fieldCeparatorMode _FieldCeparatorMode = fieldCeparatorMode.auto;
         string _fieldSeparator = "\t";
         string _decimalSeparator = ".";
+        string _filename;
         public Form1()
         {
             InitializeComponent();
@@ -51,9 +53,10 @@ namespace csv_viewer
            file.Filter = "CSV files (*.csv, *.txt) | *.csv; *.txt";
             if (file.ShowDialog() == DialogResult.OK)
             {
+                _filename = file.FileName;
                 statusStrip1.Items[0].Text = $"Opening CSV file: '{file.FileName}'";
-                _background = new Thread(new ThreadStart(() => OpenFileBackground(file.FileName)));
-                _background.Start();
+                _openBackground = new Thread(new ThreadStart(() => OpenFileBackground(file.FileName)));
+                _openBackground.Start();
                 button2.Enabled = true;
                 Text = $"Csv Viewer - {file.FileName}";
                 button1.Enabled = false;
@@ -65,7 +68,7 @@ namespace csv_viewer
         /// <param name="filename"></param>
         void OpenFileBackground(string filename)
         {
-            ProgressWindow progressWindow = new ProgressWindow("In progress", $"Opening{filename}", _background, statusStrip1);
+            ProgressWindow progressWindow = new ProgressWindow("In progress", $"Opening{filename}", _openBackground, statusStrip1);
             Task r = Task.Run(delegate () { Application.Run(progressWindow); });
             double fileSize = new FileInfo(filename).Length;
             double current = 0;
@@ -184,7 +187,9 @@ namespace csv_viewer
                             statisticBox.BeginInvoke((MethodInvoker)delegate ()
                             {
                                 statisticBox.Text = "";
-                                statisticBox.Lines = graph2.GetStatistic().ToArray();
+                                List<string> stat = graph2.GetStatistic();
+                                stat.Insert(0, $"File: {filename}");
+                                statisticBox.Lines = stat.ToArray();
 
                             });
                             previousPercentForRefreshGraph = percent;
@@ -207,8 +212,9 @@ namespace csv_viewer
             statisticBox.BeginInvoke((MethodInvoker)delegate ()
             {
                 statisticBox.Text = "";
-                statisticBox.Lines = graph2.GetStatistic().ToArray();
-                //statisticBox.Refresh();
+                List<string> stat = graph2.GetStatistic();
+                stat.Insert(0, $"File: {filename}");
+                statisticBox.Lines = stat.ToArray();
             });
             if (progressWindow.IsHandleCreated)
                 progressWindow.BeginInvoke((MethodInvoker)delegate () {
@@ -233,7 +239,9 @@ namespace csv_viewer
             {
                 graph2.draw(true);
                 statisticBox.Text = "";
-                statisticBox.Lines = graph2.GetStatistic().ToArray();
+                List<string> stat = graph2.GetStatistic();
+                stat.Insert(0, $"File: {_filename}");
+                statisticBox.Lines = stat.ToArray();
             }
             catch (Exception ex) { }
         }
@@ -262,15 +270,24 @@ namespace csv_viewer
         /// <param name="e"></param>
         private void button3_Click(object sender, EventArgs e)
         {
+            for (int i = 0; i < _generateBackground.Count; i++)
+            {
+                if (_generateBackground[i] == null || !_generateBackground[i].IsAlive)
+                {
+                    _generateBackground.RemoveAt(i);
+                    i--;
+                }
+          
+            }
             SaveFileDialog file = new SaveFileDialog();
             file.Filter = "CSV files (*.csv, *.txt) | *.csv; *.txt";
             if (file.ShowDialog() == DialogResult.OK)
             {
                 if (checkBox1.Checked)
-                    _background = new Thread(new ThreadStart(() => GenerateFileBackground(file.FileName, Convert.ToInt32(channelCount.Text), Convert.ToInt32(rowCount.Text), 10)));
+                    _generateBackground.Add(new Thread(new ThreadStart(() => GenerateFileBackground(file.FileName, Convert.ToInt32(channelCount.Text), Convert.ToInt32(rowCount.Text), 10))));
                 else
-                    _background = new Thread(new ThreadStart(() => GenerateFileBackground(file.FileName, Convert.ToInt32(channelCount.Text), Convert.ToInt32(rowCount.Text))));
-                _background.Start();
+                    _generateBackground.Add(new Thread(new ThreadStart(() => GenerateFileBackground(file.FileName, Convert.ToInt32(channelCount.Text), Convert.ToInt32(rowCount.Text)))));
+                _generateBackground[_generateBackground.Count-1].Start();
                 statusStrip1.Items[0].Text = $"Generating CSV file '{file.FileName}'";
             }
         }
@@ -285,7 +302,9 @@ namespace csv_viewer
         void GenerateFileBackground(string filename, int channelCount, int rowCount, int NaNs = -1)
         {
             //file generator
-            ProgressWindow progressWindow = new ProgressWindow("In Process", $"Generating CSV File '{filename}'", _background, statusStrip1);
+            ProgressWindow progressWindow = new ProgressWindow("In Process", $"Generating CSV File '{filename}'", Thread.CurrentThread, statusStrip1);
+
+
             Task r = Task.Run(delegate () { Application.Run(progressWindow); });
             
             List<Generator> generators = new List<Generator>();
@@ -308,7 +327,7 @@ namespace csv_viewer
                         break;
                 }
             }
-            float step = 20 / (rowCount * 1000.0f);
+            float step = 100000.0F;
             List<string> line = new List<string>();
             for (int i = 0; i < channelCount+1; i++)
                 line.Add(i.ToString());
@@ -317,10 +336,10 @@ namespace csv_viewer
             using (StreamWriter writer = new StreamWriter(filename))
             {
                 writer.WriteLine(String.Join(_fieldSeparator, line));
-                for (float i = -10, j=0;  j<rowCount; i += step, j++)
+                for (float i = 0, j=0;  j<rowCount; i += step, j++)
                 {
                     line = new List<string>();
-                    line.Add(Math.Round(i, 3).ToString());
+                    line.Add(i.ToString());
                     foreach (var generator in generators)
                     {
                         if(random.Next(0,100)<NaNs)
@@ -484,7 +503,11 @@ namespace csv_viewer
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
             graph2.DrawThread.Abort();
-            _background.Abort();
+            for (int i = 0; i < _generateBackground.Count; i++)
+               if(_generateBackground[i]!=null && _generateBackground[i].IsAlive)
+                    _generateBackground[i].Abort();
+            if (_openBackground != null && _openBackground.IsAlive)
+                _openBackground.Abort();
         }
     }
 }
