@@ -31,23 +31,23 @@
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.checkBox2 = new System.Windows.Forms.CheckBox();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.statusLabel = new System.Windows.Forms.Label();
             this.gridStepValue = new System.Windows.Forms.Label();
+            this.checkBox2 = new System.Windows.Forms.CheckBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
             this.trackBar1 = new System.Windows.Forms.TrackBar();
             this.label2 = new System.Windows.Forms.Label();
-            this.statusLabel = new System.Windows.Forms.Label();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.trackBar2 = new System.Windows.Forms.TrackBar();
             this.borderWidth = new System.Windows.Forms.Label();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.groupBox1.SuspendLayout();
             this.tableLayoutPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
-            this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).BeginInit();
+            this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // pictureBox1
@@ -105,18 +105,37 @@
             this.tableLayoutPanel2.Size = new System.Drawing.Size(787, 73);
             this.tableLayoutPanel2.TabIndex = 7;
             // 
-            // checkBox3
+            // checkBox1
             // 
-            this.checkBox3.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.checkBox3.AutoSize = true;
-            this.checkBox3.Location = new System.Drawing.Point(163, 26);
-            this.checkBox3.Name = "checkBox3";
-            this.tableLayoutPanel2.SetRowSpan(this.checkBox3, 2);
-            this.checkBox3.Size = new System.Drawing.Size(78, 21);
-            this.checkBox3.TabIndex = 2;
-            this.checkBox3.Text = "Legend";
-            this.checkBox3.UseVisualStyleBackColor = true;
-            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
+            this.checkBox1.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(3, 26);
+            this.checkBox1.Name = "checkBox1";
+            this.tableLayoutPanel2.SetRowSpan(this.checkBox1, 2);
+            this.checkBox1.Size = new System.Drawing.Size(57, 21);
+            this.checkBox1.TabIndex = 0;
+            this.checkBox1.Text = "Grid";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // statusLabel
+            // 
+            this.statusLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.statusLabel.AutoSize = true;
+            this.statusLabel.Location = new System.Drawing.Point(312, 38);
+            this.statusLabel.Name = "statusLabel";
+            this.statusLabel.Size = new System.Drawing.Size(0, 17);
+            this.statusLabel.TabIndex = 3;
+            // 
+            // gridStepValue
+            // 
+            this.gridStepValue.Anchor = System.Windows.Forms.AnchorStyles.Right;
+            this.gridStepValue.AutoSize = true;
+            this.gridStepValue.Location = new System.Drawing.Point(396, 38);
+            this.gridStepValue.Name = "gridStepValue";
+            this.gridStepValue.Size = new System.Drawing.Size(16, 17);
+            this.gridStepValue.TabIndex = 6;
+            this.gridStepValue.Text = "1";
             // 
             // checkBox2
             // 
@@ -131,28 +150,18 @@
             this.checkBox2.UseVisualStyleBackColor = true;
             this.checkBox2.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
             // 
-            // checkBox1
+            // checkBox3
             // 
-            this.checkBox1.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(3, 26);
-            this.checkBox1.Name = "checkBox1";
-            this.tableLayoutPanel2.SetRowSpan(this.checkBox1, 2);
-            this.checkBox1.Size = new System.Drawing.Size(57, 21);
-            this.checkBox1.TabIndex = 0;
-            this.checkBox1.Text = "Grid";
-            this.checkBox1.UseVisualStyleBackColor = true;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            // 
-            // gridStepValue
-            // 
-            this.gridStepValue.Anchor = System.Windows.Forms.AnchorStyles.Right;
-            this.gridStepValue.AutoSize = true;
-            this.gridStepValue.Location = new System.Drawing.Point(396, 38);
-            this.gridStepValue.Name = "gridStepValue";
-            this.gridStepValue.Size = new System.Drawing.Size(16, 17);
-            this.gridStepValue.TabIndex = 6;
-            this.gridStepValue.Text = "1";
+            this.checkBox3.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.checkBox3.AutoSize = true;
+            this.checkBox3.Location = new System.Drawing.Point(163, 26);
+            this.checkBox3.Name = "checkBox3";
+            this.tableLayoutPanel2.SetRowSpan(this.checkBox3, 2);
+            this.checkBox3.Size = new System.Drawing.Size(78, 21);
+            this.checkBox3.TabIndex = 2;
+            this.checkBox3.Text = "Legend";
+            this.checkBox3.UseVisualStyleBackColor = true;
+            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
             // 
             // trackBar1
             // 
@@ -177,31 +186,6 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "Minimal grid step";
             // 
-            // statusLabel
-            // 
-            this.statusLabel.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.statusLabel.AutoSize = true;
-            this.statusLabel.Location = new System.Drawing.Point(312, 38);
-            this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(0, 17);
-            this.statusLabel.TabIndex = 3;
-            // 
-            // tableLayoutPanel1
-            // 
-            this.tableLayoutPanel1.ColumnCount = 1;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.Controls.Add(this.pictureBox1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.groupBox1, 0, 1);
-            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
-            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(799, 410);
-            this.tableLayoutPanel1.TabIndex = 2;
-            // 
             // label1
             // 
             this.label1.Anchor = System.Windows.Forms.AnchorStyles.None;
@@ -222,18 +206,34 @@
             this.trackBar2.Name = "trackBar2";
             this.trackBar2.Size = new System.Drawing.Size(91, 46);
             this.trackBar2.TabIndex = 8;
-            this.trackBar2.Value = 1;
+            this.trackBar2.Value = 10;
             this.trackBar2.Scroll += new System.EventHandler(this.trackBar2_Scroll);
             // 
             // borderWidth
             // 
             this.borderWidth.Anchor = System.Windows.Forms.AnchorStyles.Right;
             this.borderWidth.AutoSize = true;
-            this.borderWidth.Location = new System.Drawing.Point(671, 38);
+            this.borderWidth.Location = new System.Drawing.Point(663, 38);
             this.borderWidth.Name = "borderWidth";
-            this.borderWidth.Size = new System.Drawing.Size(16, 17);
+            this.borderWidth.Size = new System.Drawing.Size(24, 17);
             this.borderWidth.TabIndex = 9;
-            this.borderWidth.Text = "1";
+            this.borderWidth.Text = "10";
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.pictureBox1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.groupBox1, 0, 1);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(0);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 100F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(799, 410);
+            this.tableLayoutPanel1.TabIndex = 2;
             // 
             // Graph
             // 
@@ -248,8 +248,8 @@
             this.tableLayoutPanel2.ResumeLayout(false);
             this.tableLayoutPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar1)).EndInit();
-            this.tableLayoutPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.trackBar2)).EndInit();
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }

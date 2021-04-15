@@ -17,39 +17,48 @@ namespace csv_viewer
     public partial class Graph : UserControl
     {
         //public fields
-        delegate void drawGelegate();
+        public Color BackColorLegend;
+        public int MinGridStep = 2;
+        public int FontSize = 8;
+        public Thread DrawThread = new Thread(new ThreadStart(() => { }));
+
+        //private fields
+        delegate void _drawGelegate();
         static object _accessGraphicsLock = new object();
         static object _accessChannelsLock = new object();
+
         /// <summary>
         /// to draw legend / grid / axes at once
         /// </summary>
-        drawGelegate _draw;
-        public Color BackColorLegend;
-        public int MinGridStep = 2;
+        _drawGelegate _draw;
+
         /// <summary>
         /// List of channels to be draw
         /// </summary>
         List<int> _drawable = new List<int>();
-        public int FontSize=8;
-        public void AddDrawable(int item)
-        {
-            _drawable.Add(item);
-            _recalculateNeeded = true;
-        }
-        public void ClearDrawable()
-        {
-            _drawable.Clear();
-        }
-        //private fields
+        /// <summary>
+        /// Length of colors array (requerement)
+        /// </summary>
         static int _colorsCount = 6;
+        /// <summary>
+        /// Array of colors for graph display
+        /// </summary>
         Color[] _legendColors = new Color[] { Color.Blue, Color.Red, Color.Green, Color.DarkBlue, Color.DarkRed, Color.DarkGreen };
+        /// <summary>
+        /// Array of brushes to display channel names in legend
+        /// </summary>
         SolidBrush[] _legendBrushes;
+        /// <summary>
+        /// Array of Pens to display channel graphs
+        /// </summary>
         Pen[] _legendPens;
-     
+
         /// <summary>
         /// Main channels list
         /// </summary>
         List<Channel> _channels = new List<Channel>();
+
+        //graphics attributes
         Bitmap _bitmap;
         Graphics _graph;
         float _maxX;
@@ -60,6 +69,25 @@ namespace csv_viewer
         float _yScale = 1;
         Point _mousePosition;
         Bitmap _clone;
+        int limit = -1;
+        int _bitmapHeight, _bitmapWidth;
+        int _offsets = 1;
+        bool _recalculateNeeded;
+
+
+        public void AddDrawable(int item)
+        {
+            _drawable.Add(item);
+            _recalculateNeeded = true;
+        }
+        public void ClearDrawable()
+        {
+            _drawable.Clear();
+        }
+
+     
+
+ 
         public Graph()
         {
             InitializeComponent();
@@ -78,9 +106,8 @@ namespace csv_viewer
                 _legendPens[i] = new Pen(_legendColors[i]);
             }
         }
-        public Thread DrawThread = new Thread(new ThreadStart(()=> { }));
-        int limit = -1;
-        int _bitmapHeight, _bitmapWidth;
+     
+
      
         /// <summary>
         /// Returns list of current channels statistic
@@ -135,8 +162,7 @@ namespace csv_viewer
 
             }
         }
-        int _offsets = 1;
-        bool _recalculateNeeded;
+
         /// <summary>
         /// Calculates current scale values for Graph
         /// </summary>
@@ -240,6 +266,9 @@ namespace csv_viewer
             DrawThread.Start();
         }
         bool _scaleNeeded = false;
+        /// <summary>
+        /// Display channel graphs
+        /// </summary>
         void drawValues()
         {
 
@@ -269,6 +298,9 @@ namespace csv_viewer
             }
 
         }
+        /// <summary>
+        /// Display Axes
+        /// </summary>
         void drawAxes()
         {
 
@@ -297,6 +329,9 @@ namespace csv_viewer
 
 
         }
+        /// <summary>
+        /// Display Legend
+        /// </summary>
         void drawLegend()
         {
 
@@ -331,6 +366,9 @@ namespace csv_viewer
 
             }
         }
+        /// <summary>
+        /// Display Grid
+        /// </summary>
         void drawGrid()
         {
 
@@ -438,9 +476,9 @@ namespace csv_viewer
                 else
                 {
                     for (float i = -xStep; i > _minX * _xScale; i -= xStep)
-                        _graph.DrawString(Math.Round((Math.Round(i / xStep) * xStep) / _xScale, 4).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                        _graph.DrawString(Math.Round((Math.Round(i / xStep) * xStep) / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
                     for (float i = +xStep; i < _maxX * _xScale; i += xStep)
-                        _graph.DrawString(Math.Round((Math.Round(i / xStep) * xStep) / _xScale, 4).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
+                        _graph.DrawString(Math.Round((Math.Round(i / xStep) * xStep) / _xScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, i, 0);
 
                 }
 
@@ -462,9 +500,9 @@ namespace csv_viewer
                 else
                 {
                     for (float i = -yStep; i > _minY * _yScale; i -= yStep)
-                        _graph.DrawString(Math.Round((Math.Round(i / yStep) * yStep) / _yScale, 4).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                        _graph.DrawString(Math.Round((Math.Round(i / yStep) * yStep) / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
                     for (float i = +yStep; i < _maxY * _yScale; i += yStep)
-                        _graph.DrawString(Math.Round((Math.Round(i / yStep) * yStep) / _yScale, 4).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
+                        _graph.DrawString(Math.Round((Math.Round(i / yStep) * yStep) / _yScale, 3).ToString(), new Font("Arial", FontSize), Brushes.Gray, 0, -i);
 
                 }
 
@@ -472,8 +510,9 @@ namespace csv_viewer
 
             }
         }
-
-
+        /// <summary>
+        /// Refresh control
+        /// </summary>
         void Refresher()
         {
             if (_xScale == 0 || _yScale == 0) return;
@@ -547,19 +586,19 @@ namespace csv_viewer
             createDelegate();
             draw(true);
         }
-
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
             createDelegate();
             draw(true);
         }
-
         private void checkBox3_CheckedChanged(object sender, EventArgs e)
         {
             createDelegate();
             draw(true);
         }
-
+        /// <summary>
+        /// Sets delegate according to checkboxes
+        /// </summary>
         void createDelegate()
         {
             _draw -= drawLegend; _draw -= drawAxes; _draw -= drawGrid; _draw -= drawValues;

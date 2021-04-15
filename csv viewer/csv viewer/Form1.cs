@@ -16,9 +16,12 @@ namespace csv_viewer
     public partial class Form1 : Form
     {
         /// <summary>
-        /// Background operation (open / generate)
+        /// Background open operation
         /// </summary>
         Thread _openBackground = new Thread(new ThreadStart(()=> { }));
+        /// <summary>
+        /// Background generate operations
+        /// </summary>
         List<Thread> _generateBackground = new List<Thread>();
         /// <summary>
         /// current decimal delimeter mode
@@ -327,7 +330,7 @@ namespace csv_viewer
                         break;
                 }
             }
-            float step = 100000.0F;
+            float step = 0.01F;
             List<string> line = new List<string>();
             for (int i = 0; i < channelCount+1; i++)
                 line.Add(i.ToString());
